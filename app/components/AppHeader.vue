@@ -9,10 +9,7 @@ const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/
 const settings = computed(() => settingsResponse.value?.data)
 
 const links = [
-  { label: 'Купить', to: '/' },
-  { label: 'Продать', to: '/' },
-  { label: 'Лизинг', to: '/' },
-  { label: 'Избранное', to: '/' }
+  { label: 'Избранное', to: '/favorites' }
 ]
 
 watch(
@@ -28,12 +25,12 @@ onMounted(loadFavorites)
 <template>
   <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
     <div class="container-page">
-      <div class="flex h-16 items-center justify-between gap-3">
+      <div class="flex h-14 items-center justify-between gap-3">
         <NuxtLink to="/" class="focus-ring flex items-center gap-2 rounded-xl">
-          <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-600 text-lg font-black text-white">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-sm font-bold text-white">
             {{ settings?.logoInitial ?? 'A' }}
           </span>
-          <span class="text-lg font-black tracking-tight text-slate-950">{{ settings?.logoText ?? 'AutoHub KG' }}</span>
+          <span class="text-base font-bold tracking-tight text-slate-950">{{ settings?.logoText ?? 'AutoHub KG' }}</span>
         </NuxtLink>
 
         <nav class="hidden items-center gap-1 md:flex">
@@ -51,13 +48,13 @@ onMounted(loadFavorites)
         </nav>
 
         <div class="hidden items-center gap-2 md:flex">
-          <button class="focus-ring rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50">
+          <button class="focus-ring rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50">
             Войти
           </button>
         </div>
 
         <button
-          class="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-900 md:hidden"
+          class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-900 md:hidden"
           type="button"
           :aria-expanded="isMenuOpen"
           aria-label="Открыть меню"
@@ -86,14 +83,14 @@ onMounted(loadFavorites)
             v-for="link in links"
             :key="link.label"
             :to="link.to"
-            class="focus-ring flex min-h-12 items-center justify-between rounded-2xl px-4 text-base font-bold text-slate-800 hover:bg-slate-100"
+            class="focus-ring flex min-h-10 items-center justify-between rounded-lg px-4 text-sm font-bold text-slate-800 hover:bg-slate-100"
           >
             <span>{{ link.label }}</span>
             <span v-if="link.label === 'Избранное' && favoriteIds.length" class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs text-emerald-800">
               {{ favoriteIds.length }}
             </span>
           </NuxtLink>
-          <button class="focus-ring mt-2 min-h-12 rounded-2xl bg-slate-950 px-4 text-base font-bold text-white">
+          <button class="focus-ring mt-2 min-h-10 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white">
             Войти
           </button>
         </nav>

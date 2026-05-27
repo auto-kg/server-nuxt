@@ -35,6 +35,7 @@ export interface Car {
 }
 
 export interface CarSearchFilters {
+  query: string
   brand: string
   model: string
   description: string

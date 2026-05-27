@@ -2,6 +2,12 @@ type TelegramWebApp = {
   initData?: string
   ready?: () => void
   expand?: () => void
+  BackButton?: {
+    show?: () => void
+    hide?: () => void
+    onClick?: (callback: () => void) => void
+    offClick?: (callback: () => void) => void
+  }
 }
 
 declare global {
@@ -23,6 +29,26 @@ const getTelegramWebApp = () => {
 export const useAdminApi = () => {
   const getTelegramInitData = () => getTelegramWebApp()?.initData ?? ''
 
+  const waitForTelegramInitData = async (timeoutMs = 1500) => {
+    if (!import.meta.client) {
+      return ''
+    }
+
+    const startedAt = Date.now()
+
+    while (Date.now() - startedAt < timeoutMs) {
+      const initData = getTelegramInitData()
+
+      if (initData) {
+        return initData
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    }
+
+    return getTelegramInitData()
+  }
+
   const readyTelegramWebApp = () => {
     const webApp = getTelegramWebApp()
     webApp?.ready?.()
@@ -30,7 +56,11 @@ export const useAdminApi = () => {
   }
 
   const adminFetch = async <T>(url: string, options: any = {}) => {
-    const initData = getTelegramInitData()
+    const initData = await waitForTelegramInitData()
+
+    if (!initData) {
+      throw new Error('Откройте админку через Telegram бота.')
+    }
 
     return await $fetch<T>(url, {
       ...options,
@@ -44,6 +74,7 @@ export const useAdminApi = () => {
   return {
     adminFetch,
     getTelegramInitData,
+    waitForTelegramInitData,
     readyTelegramWebApp
   }
 }

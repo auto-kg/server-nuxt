@@ -19,29 +19,53 @@ const createdId = ref('')
 const errorMessage = ref('')
 const data = ref<DictionariesResponse>()
 const { adminFetch, readyTelegramWebApp } = useAdminApi()
+const { showSuccess, showError } = useAdminToast()
+
+const unique = (values: string[]) => [...new Set(values.filter(Boolean))]
+
+const defaultDictionaries = {
+  brands: [],
+  models: [],
+  cities: ['Бишкек', 'Ош', 'Джалал-Абад'],
+  fuels: ['Бензин', 'Дизель', 'Гибрид', 'Электро', 'Газ'],
+  transmissions: ['Автомат', 'Механика', 'Робот', 'Вариатор'],
+  drivetrains: ['Передний', 'Задний', 'Полный'],
+  colors: ['Белый', 'Черный', 'Серый', 'Серебристый', 'Синий', 'Красный', 'Зеленый', 'Коричневый']
+}
+
+const loadDictionaries = async () => {
+  data.value = await adminFetch<DictionariesResponse>('/api/admin/dictionaries')
+}
 
 onMounted(async () => {
   readyTelegramWebApp()
 
   try {
-    data.value = await adminFetch<DictionariesResponse>('/api/admin/dictionaries')
+    await loadDictionaries()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Нет доступа к админке'
+    showError('Нет доступа к админке', errorMessage.value)
   }
 })
 
-const dictionaries = computed(() => data.value?.data ?? {
-  brands: [],
-  models: [],
-  cities: ['Бишкек', 'Ош', 'Джалал-Абад'],
-  fuels: [],
-  transmissions: [],
-  drivetrains: [],
-  colors: []
+const dictionaries = computed(() => {
+  const loaded = data.value?.data
+
+  return {
+    brands: unique([...(loaded?.brands ?? []), ...defaultDictionaries.brands]),
+    models: unique([...(loaded?.models ?? []), ...defaultDictionaries.models]),
+    cities: unique([...(loaded?.cities ?? []), ...defaultDictionaries.cities]),
+    fuels: unique([...(loaded?.fuels ?? []), ...defaultDictionaries.fuels]),
+    transmissions: unique([...(loaded?.transmissions ?? []), ...defaultDictionaries.transmissions]),
+    drivetrains: unique([...(loaded?.drivetrains ?? []), ...defaultDictionaries.drivetrains]),
+    colors: unique([...(loaded?.colors ?? []), ...defaultDictionaries.colors])
+  }
 })
 
-const handleCreated = (id: string) => {
+const handleCreated = async (id: string) => {
   createdId.value = id
+  showSuccess('Автомобиль сохранен', 'Можно открыть объявление или добавить еще одно авто.')
+  await loadDictionaries()
 }
 
 useHead({
@@ -51,28 +75,21 @@ useHead({
 
 <template>
   <AdminShell title="Новое авто" subtitle="Форма оптимизирована для телефона и Telegram Mini App.">
-    <p v-if="errorMessage" class="mb-4 rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+    <p v-if="errorMessage" class="mb-4 rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
       {{ errorMessage }}
     </p>
 
     <div v-if="createdId" class="grid gap-4">
-      <section class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-        <h2 class="text-lg font-black text-emerald-900">Автомобиль сохранен</h2>
-        <p class="mt-2 text-sm font-semibold leading-6 text-emerald-800">
-          Сейчас запись хранится in-memory. После подключения Postgres она будет сохраняться постоянно.
-        </p>
-      </section>
-
       <button
-        class="focus-ring min-h-14 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white"
+        class="focus-ring min-h-11 rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white"
         type="button"
-        @click="router.push(`/cars/${createdId}`)"
+        @click="router.push({ path: `/cars/${createdId}`, query: { from: 'admin' } })"
       >
         Открыть объявление
       </button>
 
       <button
-        class="focus-ring min-h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-black text-slate-950"
+        class="focus-ring min-h-11 rounded-lg border border-slate-200 bg-white px-5 text-sm font-bold text-slate-950"
         type="button"
         @click="createdId = ''"
       >

@@ -10,7 +10,7 @@ const activeImage = computed(() => props.images[activeIndex.value] ?? props.imag
 
 <template>
   <section class="space-y-3">
-    <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200 shadow-soft md:aspect-[16/10]">
+    <div class="aspect-[4/3] overflow-hidden rounded-lg bg-slate-200 shadow-soft md:aspect-[16/10]">
       <img :src="activeImage" :alt="title" class="h-full w-full object-cover">
     </div>
 
@@ -18,7 +18,7 @@ const activeImage = computed(() => props.images[activeIndex.value] ?? props.imag
       <button
         v-for="(imageUrl, index) in images"
         :key="imageUrl"
-        class="focus-ring aspect-[4/3] overflow-hidden rounded-2xl border bg-slate-200 transition"
+        class="focus-ring aspect-[4/3] overflow-hidden rounded-lg border bg-slate-200 transition"
         :class="index === activeIndex ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-transparent opacity-80 hover:opacity-100'"
         type="button"
         @click="activeIndex = index"

@@ -40,11 +40,16 @@ export const useCars = () => {
 
   const searchCars = (filters: CarSearchFilters) =>
     cars.filter((car) => {
+      const search = filters.query.trim().toLowerCase()
       const maxPrice = Number(filters.maxPrice)
       const yearFrom = Number(filters.yearFrom)
       const maxMileage = Number(filters.maxMileage)
+      const searchValues = [car.brand, car.model, car.title, car.city, car.description, car.seller.name]
+        .join(' ')
+        .toLowerCase()
 
       return (
+        (!search || searchValues.includes(search)) &&
         (!filters.brand || car.brand === filters.brand) &&
         (!filters.model || car.model.toLowerCase().includes(filters.model.toLowerCase())) &&
         (!filters.description || car.description.toLowerCase().includes(filters.description.toLowerCase())) &&
