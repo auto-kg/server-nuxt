@@ -9,6 +9,10 @@ node_modules
 .cache
 .nitro
 dist
+uploads
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/site-hero.png
 
 logs
 *.log

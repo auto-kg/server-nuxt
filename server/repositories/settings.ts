@@ -11,7 +11,7 @@ export const defaultSiteSettings: SiteSettings = {
   heroBadge: 'Проверенные автомобили по всему Кыргызстану',
   heroTitle: 'Go AutoHub KG.',
   heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана с быстрым поиском и честными карточками.',
-  heroImage: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2200&q=82',
+  heroImage: '/uploads/site-hero.png',
   footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
 }
 

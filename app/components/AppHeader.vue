@@ -9,10 +9,7 @@ const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/
 const settings = computed(() => settingsResponse.value?.data)
 
 const links = [
-  { label: 'Купить', to: '/' },
-  { label: 'Продать', to: '/' },
-  { label: 'Лизинг', to: '/' },
-  { label: 'Избранное', to: '/' }
+  { label: 'Избранное', to: '/favorites' }
 ]
 
 watch(

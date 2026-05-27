@@ -33,8 +33,20 @@ services:
       TELEGRAM_INIT_DATA_MAX_AGE_SECONDS: ${TELEGRAM_INIT_DATA_MAX_AGE_SECONDS:-86400}
       NUXT_ALLOWED_HOST: ${NUXT_ALLOWED_HOST}
       NUXT_HMR_HOST: ${NUXT_HMR_HOST:-}
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
+      UPLOADS_DIR: ${UPLOADS_DIR:-/app/.output/public/uploads}
+      PUBLIC_UPLOADS_BASE_URL: ${PUBLIC_UPLOADS_BASE_URL:-/uploads}
+      UPLOAD_MAX_FILE_SIZE_MB: ${UPLOAD_MAX_FILE_SIZE_MB:-8}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
     ports:
       - "127.0.0.1:${NUXT_HOST_PORT:-3001}:3000"
+    volumes:
+      - ${UPLOADS_HOST_DIR:-./uploads}/cars:${UPLOADS_DIR:-/app/.output/public/uploads}/cars
+      - ${UPLOADS_HOST_DIR:-./uploads}/site:${UPLOADS_DIR:-/app/.output/public/uploads}/site
 
 volumes:
   postgres-data:

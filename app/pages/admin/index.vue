@@ -5,18 +5,33 @@ import { formatPrice } from '~/utils/format'
 
 const { adminFetch, readyTelegramWebApp } = useAdminApi()
 const carsResponse = ref<{ data: Car[] }>()
+const searchQuery = ref('')
+const isLoadingCars = ref(false)
 const errorMessage = ref('')
 
-const latestCars = computed(() => carsResponse.value?.data.slice(0, 4) ?? [])
+const cars = computed(() => carsResponse.value?.data ?? [])
+
+const loadCars = async () => {
+  isLoadingCars.value = true
+  errorMessage.value = ''
+
+  try {
+    carsResponse.value = await adminFetch<{ data: Car[] }>('/api/admin/cars', {
+      query: {
+        query: searchQuery.value.trim(),
+        limit: 20
+      }
+    })
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Нет доступа к админке'
+  } finally {
+    isLoadingCars.value = false
+  }
+}
 
 onMounted(async () => {
   readyTelegramWebApp()
-
-  try {
-    carsResponse.value = await adminFetch<{ data: Car[] }>('/api/admin/cars')
-  } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Нет доступа к админке'
-  }
+  await loadCars()
 })
 
 useHead({
@@ -39,11 +54,11 @@ useHead({
             <span aria-hidden="true">+</span>
           </NuxtLink>
 
-          <button class="focus-ring min-h-14 rounded-2xl border border-slate-200 bg-white px-4 text-left text-base font-black text-slate-950">
+          <button class="min-h-14 cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 text-left text-base font-black text-slate-400" disabled type="button">
             Исправить марку или модель
           </button>
 
-          <button class="focus-ring min-h-14 rounded-2xl border border-slate-200 bg-white px-4 text-left text-base font-black text-slate-950">
+          <button class="min-h-14 cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 text-left text-base font-black text-slate-400" disabled type="button">
             Снять объявление с публикации
           </button>
 
@@ -59,27 +74,64 @@ useHead({
 
       <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="flex items-center justify-between gap-3">
-          <h2 class="text-lg font-black">Последние авто</h2>
-          <span class="text-sm font-black text-slate-500">{{ carsResponse?.data.length ?? 0 }}</span>
+          <h2 class="text-lg font-black">Поиск авто</h2>
+          <span class="text-sm font-black text-slate-500">{{ cars.length }}</span>
         </div>
+
+        <form class="mt-4 grid gap-3" @submit.prevent="loadCars">
+          <input
+            v-model.trim="searchQuery"
+            class="focus-ring min-h-12 rounded-2xl border border-slate-200 bg-white px-4 text-base font-bold text-slate-950 placeholder:text-slate-400"
+            placeholder="Марка, модель, город, название"
+          >
+
+          <button
+            class="focus-ring min-h-12 rounded-2xl bg-slate-950 px-4 text-base font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="isLoadingCars"
+            type="submit"
+          >
+            {{ isLoadingCars ? 'Ищем...' : 'Найти' }}
+          </button>
+        </form>
 
         <p v-if="errorMessage" class="mt-4 rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
           {{ errorMessage }}
         </p>
 
         <div class="mt-4 grid gap-3">
-          <NuxtLink
-            v-for="car in latestCars"
+          <article
+            v-for="car in cars"
             :key="car.id"
-            :to="`/cars/${car.id}`"
-            class="focus-ring flex gap-3 rounded-2xl border border-slate-100 p-3"
+            class="grid gap-3 rounded-2xl border border-slate-100 p-3"
           >
-            <img :src="car.images[0]" :alt="car.title" class="h-16 w-20 rounded-xl object-cover">
-            <div class="min-w-0">
-              <p class="truncate text-sm font-black text-slate-950">{{ car.title }}</p>
-              <p class="mt-1 text-sm font-bold text-slate-600">{{ car.city }} · {{ formatPrice(car.price) }}</p>
+            <div class="flex gap-3">
+              <img :src="car.images[0]" :alt="car.title" class="h-16 w-20 rounded-xl object-cover">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-black text-slate-950">{{ car.title }}</p>
+                <p class="mt-1 text-sm font-bold text-slate-600">{{ car.city }} · {{ formatPrice(car.price) }}</p>
+              </div>
             </div>
-          </NuxtLink>
+
+            <div class="grid grid-cols-2 gap-2">
+              <NuxtLink
+                :to="`/admin/cars/${car.id}/edit`"
+                class="focus-ring min-h-11 rounded-2xl bg-emerald-600 px-3 py-3 text-center text-sm font-black text-white"
+              >
+                Изменить
+              </NuxtLink>
+
+              <NuxtLink
+                :to="{ path: `/cars/${car.id}`, query: { from: 'admin' } }"
+                class="focus-ring min-h-11 rounded-2xl border border-slate-200 px-3 py-3 text-center text-sm font-black text-slate-950"
+              >
+                Открыть
+              </NuxtLink>
+            </div>
+          </article>
+
+          <p v-if="!isLoadingCars && !cars.length && !errorMessage" class="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
+            Ничего не найдено.
+          </p>
         </div>
       </section>
 

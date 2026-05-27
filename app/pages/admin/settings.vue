@@ -4,10 +4,11 @@ import AdminShell from '~/components/admin/AdminShell.vue'
 import type { SiteSettings } from '~/types/settings'
 
 const isSaving = ref(false)
-const saved = ref(false)
+const isUploadingHero = ref(false)
 const errorMessage = ref('')
 
 const { adminFetch, readyTelegramWebApp } = useAdminApi()
+const { showSuccess, showError } = useAdminToast()
 const settingsResponse = ref<{ data: SiteSettings }>()
 
 const settings = reactive<SiteSettings>({
@@ -16,7 +17,7 @@ const settings = reactive<SiteSettings>({
   heroBadge: 'Проверенные автомобили по всему Кыргызстану',
   heroTitle: 'Go AutoHub KG.',
   heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана.',
-  heroImage: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2200&q=82',
+  heroImage: '/uploads/site-hero.png',
   footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
 })
 
@@ -43,12 +44,12 @@ onMounted(async () => {
     await loadSettings()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Нет доступа к админке'
+    showError('Нет доступа к админке', errorMessage.value)
   }
 })
 
 const save = async () => {
   isSaving.value = true
-  saved.value = false
   errorMessage.value = ''
 
   try {
@@ -59,11 +60,44 @@ const save = async () => {
 
     Object.assign(settings, response.data)
     await loadSettings()
-    saved.value = true
+    showSuccess('Настройки сохранены', 'Изменения применяются на публичном сайте.')
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Не удалось сохранить настройки'
+    showError('Не удалось сохранить настройки', errorMessage.value)
   } finally {
     isSaving.value = false
+  }
+}
+
+const uploadHeroImage = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  isUploadingHero.value = true
+  errorMessage.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('folder', 'site')
+
+    const response = await adminFetch<{ data: Array<{ path: string }> }>('/api/admin/uploads', {
+      method: 'POST',
+      body: formData
+    })
+
+    settings.heroImage = response.data[0]?.path ?? settings.heroImage
+    showSuccess('Изображение загружено', 'Не забудьте сохранить настройки.')
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить изображение'
+    showError('Не удалось загрузить изображение', errorMessage.value)
+  } finally {
+    input.value = ''
+    isUploadingHero.value = false
   }
 }
 
@@ -97,8 +131,13 @@ useHead({
             <textarea v-model.trim="settings.heroSubtitle" class="focus-ring min-h-24 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
           </AdminField>
 
-          <AdminField label="Главное изображение URL">
-            <textarea v-model.trim="settings.heroImage" class="focus-ring min-h-24 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
+          <AdminField label="Главное изображение">
+            <div class="grid gap-3">
+              <img :src="settings.heroImage" alt="" class="aspect-[16/9] rounded-2xl object-cover">
+              <input class="text-sm font-bold text-slate-700" accept="image/jpeg,image/png,image/webp,image/gif" type="file" @change="uploadHeroImage">
+              <textarea v-model.trim="settings.heroImage" class="focus-ring min-h-20 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
+              <p v-if="isUploadingHero" class="text-sm font-bold text-slate-500">Загружаем изображение...</p>
+            </div>
           </AdminField>
 
           <AdminField label="Текст footer">
@@ -106,10 +145,6 @@ useHead({
           </AdminField>
         </div>
       </section>
-
-      <p v-if="saved" class="rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-800">
-        Настройки сохранены и применяются на публичном сайте.
-      </p>
 
       <p v-if="errorMessage" class="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
         {{ errorMessage }}

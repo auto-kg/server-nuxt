@@ -7,8 +7,8 @@ const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/
 const { data: categoriesResponse } = await useFetch<{ data: HomeCategory[] }>('/api/categories')
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const categories = computed(() => categoriesResponse.value?.data ?? [])
-const displayedCars = ref<Car[]>([])
 const settings = computed(() => settingsResponse.value?.data)
+const catalog = useCarCatalog(allCars)
 
 const featuredCars = computed(() => allCars.value.filter((car) => car.isFeatured).slice(0, 6))
 
@@ -24,20 +24,20 @@ const popularBrands = computed(() => {
     .slice(0, 8)
 })
 
-watch(
-  allCars,
-  (cars) => {
-    displayedCars.value = cars
-  },
-  { immediate: true }
-)
-
 const handleSearch = async (filters: CarSearchFilters) => {
-  const response = await $fetch<{ data: Car[] }>('/api/cars', {
-    query: filters
-  })
+  await catalog.applyFilters(filters)
+}
 
-  displayedCars.value = response.data
+const handleReset = () => {
+  catalog.resetFilters()
+}
+
+const goToCatalogPage = (page: number) => {
+  catalog.setPage(page)
+
+  if (import.meta.client) {
+    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 const advantages = [
@@ -68,7 +68,7 @@ useHead({
       <section class="relative bg-white pb-8 lg:pb-24">
         <div class="relative min-h-[520px] overflow-hidden bg-slate-900 shadow-soft sm:min-h-[620px] lg:min-h-[660px]">
             <img
-              src="/banner2.png"
+              :src="settings?.heroImage"
               alt="Автомобиль на дороге"
               class="absolute inset-0 h-full w-full object-cover"
             >
@@ -90,7 +90,12 @@ useHead({
 
         <div class="relative -mt-16 px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:absolute lg:inset-x-0 lg:bottom-0 lg:w-[70%] lg:translate-y-1/2">
           <div class="mx-auto">
-            <SearchForm :cars="allCars" @search="handleSearch" />
+            <SearchForm
+              :cars="allCars"
+              :is-loading="catalog.isLoading.value"
+              @reset="handleReset"
+              @search="handleSearch"
+            />
           </div>
         </div>
       </section>
@@ -145,22 +150,63 @@ useHead({
         </div>
       </section>
 
-      <section class="px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
+      <section id="catalog" class="scroll-mt-6 px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
           <SectionHeader
             title="Каталог автомобилей"
-            :subtitle="`${displayedCars.length} предложений доступно сейчас`"
+            :subtitle="catalog.totalCars.value ? `${catalog.totalCars.value} предложений, показаны ${catalog.pageStart.value + 1}-${catalog.pageEnd.value}` : 'Нет предложений по выбранным условиям'"
             compact
           />
 
-          <div v-if="displayedCars.length" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            <CarCard v-for="car in displayedCars" :key="car.id" :car="car" />
+          <p v-if="catalog.errorMessage.value" class="mt-4 rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+            {{ catalog.errorMessage.value }}
+          </p>
+
+          <div v-if="catalog.paginatedCars.value.length" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <CarCard v-for="car in catalog.paginatedCars.value" :key="car.id" :car="car" />
           </div>
 
           <div v-else class="mt-6 rounded-2xl border border-slate-200 bg-white p-8 text-center">
             <h3 class="text-xl font-black text-slate-950">Ничего не найдено</h3>
             <p class="mt-2 text-slate-600">Попробуйте изменить марку, цену или год выпуска.</p>
           </div>
+
+          <nav
+            v-if="catalog.totalPages.value > 1"
+            class="mt-6 grid gap-3 border-t border-slate-100 pt-4 sm:flex sm:items-center sm:justify-between"
+            aria-label="Пагинация каталога"
+          >
+            <button
+              class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="catalog.currentPage.value === 1"
+              type="button"
+              @click="goToCatalogPage(catalog.currentPage.value - 1)"
+            >
+              Назад
+            </button>
+
+            <div class="flex justify-center gap-2 overflow-x-auto">
+              <button
+                v-for="page in catalog.visiblePages.value"
+                :key="page"
+                class="focus-ring h-11 w-11 shrink-0 rounded-2xl text-sm font-black"
+                :class="page === catalog.currentPage.value ? 'bg-slate-950 text-white' : 'border border-slate-200 bg-white text-slate-950'"
+                type="button"
+                @click="goToCatalogPage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+
+            <button
+              class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="catalog.currentPage.value === catalog.totalPages.value"
+              type="button"
+              @click="goToCatalogPage(catalog.currentPage.value + 1)"
+            >
+              Далее
+            </button>
+          </nav>
         </div>
       </section>
 
@@ -213,10 +259,7 @@ useHead({
             </p>
           </div>
           <nav class="flex flex-wrap gap-4 text-sm font-bold text-slate-600">
-            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/">Купить</NuxtLink>
-            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/">Продать</NuxtLink>
-            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/">Лизинг</NuxtLink>
-            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/">Избранное</NuxtLink>
+            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/favorites">Избранное</NuxtLink>
           </nav>
         </div>
       </div>

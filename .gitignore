@@ -9,6 +9,12 @@ node_modules/
 .cache/
 dist/
 
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/site-hero.png
+uploads/
+
 # Local environment
 .env
 .env.*

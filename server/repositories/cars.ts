@@ -1,6 +1,6 @@
-import { and, asc, desc, eq, gte, ilike, lte, type SQL } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, ilike, lte, or, type SQL } from 'drizzle-orm'
 import type { AdminCarPayload, Car, CarSearchFilters } from '../../app/types/car'
-import { createCar as createMemoryCar, findCar as findMemoryCar, getCarDictionaries as getMemoryDictionaries, listCars as listMemoryCars } from '../utils/carStore'
+import { createCar as createMemoryCar, findCar as findMemoryCar, getCarDictionaries as getMemoryDictionaries, listCars as listMemoryCars, updateCar as updateMemoryCar } from '../utils/carStore'
 import { normalizeBrandName, normalizeDictionaryValue } from '../utils/normalize'
 import { getDb, hasDatabase } from '../db/client'
 import { brandAliases, brands, carImages, cars, cities, models, sellers } from '../db/schema'
@@ -24,6 +24,10 @@ type CarRow = {
   city: typeof cities.$inferSelect
   seller: typeof sellers.$inferSelect
   image: typeof carImages.$inferSelect | null
+}
+
+type CarRepositoryFilters = Partial<CarSearchFilters> & {
+  limit?: number | string
 }
 
 const rowsToCars = (rows: CarRow[]) => {
@@ -144,13 +148,30 @@ const createSeller = async (payload: AdminCarPayload) => {
   return seller
 }
 
-export const listCarsRepository = async (filters?: Partial<CarSearchFilters>) => {
+export const listCarsRepository = async (filters?: CarRepositoryFilters) => {
   if (!hasDatabase()) {
     return listMemoryCars(filters)
   }
 
   const db = getDb()
   const conditions: SQL[] = [eq(cars.status, 'published')]
+  const search = filters?.query?.trim()
+  const limit = Math.min(Math.max(Number(filters?.limit) || 100, 1), 100)
+
+  if (search) {
+    const searchCondition = or(
+      ilike(brands.name, `%${search}%`),
+      ilike(models.name, `%${search}%`),
+      ilike(cities.name, `%${search}%`),
+      ilike(cars.title, `%${search}%`),
+      ilike(cars.description, `%${search}%`),
+      ilike(sellers.name, `%${search}%`)
+    )
+
+    if (searchCondition) {
+      conditions.push(searchCondition)
+    }
+  }
 
   if (filters?.brand) {
     conditions.push(eq(brands.name, filters.brand))
@@ -194,6 +215,7 @@ export const listCarsRepository = async (filters?: Partial<CarSearchFilters>) =>
     .leftJoin(carImages, eq(cars.id, carImages.carId))
     .where(and(...conditions))
     .orderBy(desc(cars.createdAt), asc(carImages.sortOrder))
+    .limit(limit)
 
   return rowsToCars(rows)
 }
@@ -268,6 +290,63 @@ export const createCarRepository = async (payload: AdminCarPayload) => {
   }
 
   return created
+}
+
+export const updateCarRepository = async (id: string, payload: AdminCarPayload) => {
+  if (!hasDatabase()) {
+    return updateMemoryCar(id, payload)
+  }
+
+  const db = getDb()
+  const [existing] = await db.select().from(cars).where(eq(cars.id, id)).limit(1)
+
+  if (!existing) {
+    return undefined
+  }
+
+  const brand = await getOrCreateBrand(payload.brand)
+  const model = await getOrCreateModel(brand.id, payload.model)
+  const city = await getOrCreateCity(payload.city)
+  const images = payload.images.filter(Boolean).length ? payload.images.filter(Boolean) : [defaultImage]
+
+  await db.transaction(async (tx) => {
+    await tx.update(sellers).set({
+      name: payload.sellerName.trim(),
+      type: payload.sellerType,
+      phone: payload.sellerPhone.trim(),
+      updatedAt: new Date()
+    }).where(eq(sellers.id, existing.sellerId))
+
+    await tx.update(cars).set({
+      brandId: brand.id,
+      modelId: model.id,
+      cityId: city.id,
+      title: payload.title.trim() || `${brand.name} ${model.name}`.trim(),
+      price: payload.price,
+      year: payload.year,
+      mileage: payload.mileage,
+      fuel: payload.fuel.trim(),
+      transmission: payload.transmission.trim(),
+      engine: payload.engine.trim(),
+      drivetrain: payload.drivetrain.trim(),
+      power: payload.power,
+      color: payload.color.trim(),
+      description: payload.description.trim(),
+      isFeatured: payload.isFeatured,
+      updatedAt: new Date()
+    }).where(eq(cars.id, id))
+
+    await tx.delete(carImages).where(eq(carImages.carId, id))
+    await tx.insert(carImages).values(
+      images.map((url, index) => ({
+        carId: id,
+        url,
+        sortOrder: index
+      }))
+    )
+  })
+
+  return findCarRepository(id)
 }
 
 export const getCarDictionariesRepository = async () => {

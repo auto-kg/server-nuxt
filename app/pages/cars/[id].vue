@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import type { Car } from '~/types/car'
+import { buildWhatsappUrl } from '~/utils/contact'
 import { formatMileage, formatPrice } from '~/utils/format'
 
 const route = useRoute()
+const router = useRouter()
+const requestUrl = useRequestURL()
 const { loadFavorites } = useFavorites()
+const { addRecentlyViewed, loadRecentlyViewed } = useRecentlyViewed()
+const { readyTelegramWebApp, waitForTelegramInitData } = useAdminApi()
 
 const carId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+const openedFromAdmin = computed(() => route.query.from === 'admin')
 const { data: carResponse, error } = await useFetch<{ data: Car }>(`/api/cars/${carId}`)
 const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
 const car = carResponse.value?.data
@@ -34,6 +40,13 @@ const similarCars = computed(() =>
 )
 const mobileContactRef = ref<HTMLElement | null>(null)
 const showMobileContactBar = ref(false)
+const showAdminNavigation = ref(false)
+let telegramBackHandler: (() => void) | undefined
+const carUrl = computed(() => `${requestUrl.origin}${route.path}`)
+const whatsappMessage = computed(() =>
+  `Здравствуйте! Интересует автомобиль ${car.title} за ${formatPrice(car.price)}. Объявление: ${carUrl.value}`
+)
+const whatsappUrl = computed(() => buildWhatsappUrl(car.seller.phone, whatsappMessage.value))
 
 const specs = computed(() => [
   { label: 'Год', value: car.year },
@@ -56,11 +69,42 @@ const updateMobileContactBar = () => {
   showMobileContactBar.value = Boolean(contactElement && contactElement.getBoundingClientRect().bottom < 0)
 }
 
-onMounted(() => {
+const goBackToAdmin = () => {
+  router.push('/admin')
+}
+
+const setupTelegramBackButton = () => {
+  if (!import.meta.client) {
+    return
+  }
+
+  const backButton = window.Telegram?.WebApp?.BackButton
+
+  if (!backButton) {
+    return
+  }
+
+  telegramBackHandler = goBackToAdmin
+  backButton.show?.()
+  backButton.onClick?.(telegramBackHandler)
+}
+
+onMounted(async () => {
   loadFavorites()
+  loadRecentlyViewed()
+  addRecentlyViewed(car.id)
   updateMobileContactBar()
   window.addEventListener('scroll', updateMobileContactBar, { passive: true })
   window.addEventListener('resize', updateMobileContactBar)
+
+  if (openedFromAdmin.value) {
+    readyTelegramWebApp()
+    showAdminNavigation.value = Boolean(await waitForTelegramInitData())
+
+    if (showAdminNavigation.value) {
+      setupTelegramBackButton()
+    }
+  }
 })
 
 onBeforeUnmount(() => {
@@ -70,6 +114,13 @@ onBeforeUnmount(() => {
 
   window.removeEventListener('scroll', updateMobileContactBar)
   window.removeEventListener('resize', updateMobileContactBar)
+
+  const backButton = window.Telegram?.WebApp?.BackButton
+
+  if (telegramBackHandler && backButton) {
+    backButton.offClick?.(telegramBackHandler)
+    backButton.hide?.()
+  }
 })
 
 useHead({
@@ -83,6 +134,25 @@ useHead({
 
     <main class="bg-slate-50 pb-24 pt-5 sm:pt-8 lg:pb-8">
       <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
+        <section v-if="showAdminNavigation" class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              class="focus-ring min-h-11 rounded-2xl bg-slate-950 px-3 text-sm font-black text-white"
+              type="button"
+              @click="goBackToAdmin"
+            >
+              В админку
+            </button>
+
+            <NuxtLink
+              :to="`/admin/cars/${car.id}/edit`"
+              class="focus-ring inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-600 px-3 text-sm font-black text-white"
+            >
+              Редактировать
+            </NuxtLink>
+          </div>
+        </section>
+
         <NuxtLink to="/" class="focus-ring inline-flex min-h-11 items-center rounded-full px-1 text-sm font-black text-slate-600 hover:text-slate-950">
           Назад к каталогу
         </NuxtLink>
@@ -110,6 +180,7 @@ useHead({
             <CarContactPanel
               :seller="car.seller"
               :city="car.city"
+              :contact-url="whatsappUrl"
               compact
             />
           </div>
@@ -125,6 +196,7 @@ useHead({
             class="lg:sticky lg:top-24"
             :seller="car.seller"
             :city="car.city"
+            :contact-url="whatsappUrl"
           />
         </div>
       </div>
@@ -155,9 +227,14 @@ useHead({
             <p class="truncate text-sm font-black text-slate-950">{{ car.seller.name }}</p>
             <p class="text-sm font-bold text-slate-600">{{ formatPrice(car.price) }}</p>
           </div>
-          <button class="focus-ring min-h-11 shrink-0 rounded-2xl bg-emerald-600 px-4 text-sm font-black text-white shadow-lg shadow-emerald-600/20">
+          <a
+            class="focus-ring inline-flex min-h-11 shrink-0 items-center rounded-2xl bg-emerald-600 px-4 text-sm font-black text-white shadow-lg shadow-emerald-600/20"
+            :href="whatsappUrl"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             Связаться
-          </button>
+          </a>
         </div>
       </div>
     </Transition>

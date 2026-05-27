@@ -5,6 +5,7 @@ defineProps<{
   seller: Seller
   city: string
   compact?: boolean
+  contactUrl?: string
 }>()
 </script>
 
@@ -31,15 +32,27 @@ defineProps<{
     <SellerPanel v-else :seller="seller" :city="city" />
 
     <div v-if="compact" class="mt-4 grid gap-3 border-t border-slate-100 pt-4">
-      <button class="focus-ring min-h-12 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700">
+      <a
+        v-if="contactUrl"
+        class="focus-ring inline-flex min-h-12 items-center justify-center rounded-2xl bg-emerald-600 px-5 text-center text-base font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700"
+        :href="contactUrl"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         Связаться с продавцом
-      </button>
+      </a>
     </div>
 
     <div v-else class="mt-5 grid gap-3 border-t border-slate-100 pt-5">
-      <button class="focus-ring min-h-12 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700">
+      <a
+        v-if="contactUrl"
+        class="focus-ring inline-flex min-h-12 items-center justify-center rounded-2xl bg-emerald-600 px-5 text-center text-base font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700"
+        :href="contactUrl"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         Связаться с продавцом
-      </button>
+      </a>
     </div>
   </aside>
 </template>

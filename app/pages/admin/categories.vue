@@ -4,6 +4,7 @@ import AdminShell from '~/components/admin/AdminShell.vue'
 import type { AdminCategoryPayload, HomeCategory } from '~/types/car'
 
 const { adminFetch, readyTelegramWebApp } = useAdminApi()
+const { showSuccess, showError } = useAdminToast()
 const data = ref<{ data: HomeCategory[] }>()
 
 const isSubmitting = ref(false)
@@ -30,6 +31,7 @@ onMounted(async () => {
     await loadCategories()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Нет доступа к админке'
+    showError('Нет доступа к админке', errorMessage.value)
   }
 })
 
@@ -48,8 +50,10 @@ const submit = async () => {
     form.sortOrder += 10
     form.isActive = true
     await loadCategories()
+    showSuccess('Категория добавлена', 'Она появится на главной странице.')
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Не удалось добавить категорию'
+    showError('Не удалось добавить категорию', errorMessage.value)
   } finally {
     isSubmitting.value = false
   }
