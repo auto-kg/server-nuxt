@@ -27,6 +27,11 @@ const allowedMimeTypes = new Map([
 
 const normalizePublicBaseUrl = (value: string) => {
   const trimmed = value.trim() || '/uploads'
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/$/, '')
+  }
+
   return trimmed.startsWith('/') ? trimmed.replace(/\/$/, '') : `/${trimmed.replace(/\/$/, '')}`
 }
 

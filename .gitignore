@@ -14,6 +14,8 @@ public/uploads/*
 !public/uploads/.gitkeep
 !public/uploads/site-hero.png
 uploads/
+!server/routes/uploads/
+!server/routes/uploads/**
 
 # Local environment
 .env
