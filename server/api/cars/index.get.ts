@@ -1,0 +1,18 @@
+import { listCarsRepository } from '../../repositories/cars'
+
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+
+  return {
+    data: await listCarsRepository({
+      brand: String(query.brand ?? ''),
+      model: String(query.model ?? ''),
+      description: String(query.description ?? ''),
+      maxPrice: String(query.maxPrice ?? ''),
+      yearFrom: String(query.yearFrom ?? ''),
+      maxMileage: String(query.maxMileage ?? ''),
+      fuel: String(query.fuel ?? ''),
+      city: String(query.city ?? '')
+    })
+  }
+})
