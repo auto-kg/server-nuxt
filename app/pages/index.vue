@@ -5,10 +5,21 @@ import type { SiteSettings } from '~/types/settings'
 const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
 const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/settings')
 const { data: categoriesResponse } = await useFetch<{ data: HomeCategory[] }>('/api/categories')
+const fallbackHeroImage = '/uploads/site-hero.png'
+const fallbackSettings: SiteSettings = {
+  logoText: 'AutoHub KG',
+  logoInitial: 'A',
+  heroBadge: 'Проверенные автомобили по всему Кыргызстану',
+  heroTitle: 'Go AutoHub KG.',
+  heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана с быстрым поиском и честными карточками.',
+  heroImage: fallbackHeroImage,
+  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
+}
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const categories = computed(() => categoriesResponse.value?.data ?? [])
-const settings = computed(() => settingsResponse.value?.data)
+const settings = computed(() => settingsResponse.value?.data ?? fallbackSettings)
 const catalog = useCarCatalog(allCars)
+const heroImage = computed(() => settings.value.heroImage || fallbackHeroImage)
 
 const featuredCars = computed(() => allCars.value.filter((car) => car.isFeatured).slice(0, 6))
 
@@ -30,6 +41,16 @@ const handleSearch = async (filters: CarSearchFilters) => {
 
 const handleReset = () => {
   catalog.resetFilters()
+}
+
+const handleHeroImageError = (event: Event) => {
+  const image = event.target as HTMLImageElement
+
+  if (image.src.endsWith(fallbackHeroImage)) {
+    return
+  }
+
+  image.src = fallbackHeroImage
 }
 
 const goToCatalogPage = (page: number) => {
@@ -68,9 +89,10 @@ useHead({
       <section class="relative bg-white pb-6 lg:pb-8">
         <div class="relative min-h-[430px] overflow-hidden bg-slate-900 shadow-soft sm:min-h-[520px] lg:min-h-[560px]">
             <img
-              :src="settings?.heroImage"
+              :src="heroImage"
               alt="Автомобиль на дороге"
-              class="absolute inset-0 h-full w-full object-cover"
+              class="absolute inset-0 h-full w-full object-cover object-center"
+              @error="handleHeroImageError"
             >
             <div class="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/10 to-slate-950/55" />
             <div class="relative flex min-h-[430px] items-end px-5 pb-24 sm:min-h-[520px] sm:px-10 sm:pb-28 lg:min-h-[560px] lg:px-20">

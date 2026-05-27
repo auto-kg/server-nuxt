@@ -69,6 +69,16 @@ const save = async () => {
   }
 }
 
+const handleHeroImageError = (event: Event) => {
+  const image = event.target as HTMLImageElement
+
+  if (image.src.endsWith('/uploads/site-hero.png')) {
+    return
+  }
+
+  image.src = '/uploads/site-hero.png'
+}
+
 const uploadHeroImage = async (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -131,9 +141,11 @@ useHead({
             <textarea v-model.trim="settings.heroSubtitle" class="focus-ring min-h-24 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
           </AdminField>
 
-          <AdminField label="Главное изображение">
+          <AdminField label="Главное изображение" hint="Для главного экрана лучше использовать широкое фото: примерно 16:9 или шире. Узкие и квадратные изображения будут кадрироваться.">
             <div class="grid gap-3">
-              <img :src="settings.heroImage" alt="" class="aspect-[16/9] rounded-lg object-cover">
+              <div class="aspect-[16/9] overflow-hidden rounded-lg bg-slate-200">
+                <img :src="settings.heroImage" alt="" class="h-full w-full object-cover object-center" @error="handleHeroImageError">
+              </div>
               <input class="text-sm font-bold text-slate-700" accept="image/jpeg,image/png,image/webp,image/gif" type="file" @change="uploadHeroImage">
               <textarea v-model.trim="settings.heroImage" class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
               <p v-if="isUploadingHero" class="text-sm font-bold text-slate-500">Загружаем изображение...</p>
