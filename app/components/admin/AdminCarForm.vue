@@ -167,13 +167,13 @@ const submit = async () => {
   }
 }
 
-const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-white px-4 text-base font-bold text-slate-950 placeholder:text-slate-400'
+const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 placeholder:text-slate-400'
 </script>
 
 <template>
   <form class="grid gap-4" @submit.prevent="submit">
-    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 class="text-lg font-black">Автомобиль</h2>
+    <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 class="text-lg font-bold">Автомобиль</h2>
 
       <div class="mt-4 grid gap-4">
         <AdminField label="Марка" hint="Можно выбрать существующую или ввести новую. Например: Mercedes-Benz.">
@@ -210,8 +210,8 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
       </div>
     </section>
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 class="text-lg font-black">Характеристики</h2>
+    <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 class="text-lg font-bold">Характеристики</h2>
 
       <div class="mt-4 grid gap-4">
         <div class="grid grid-cols-2 gap-3">
@@ -256,8 +256,8 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
       </div>
     </section>
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 class="text-lg font-black">Локация и продавец</h2>
+    <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 class="text-lg font-bold">Локация и продавец</h2>
 
       <div class="mt-4 grid gap-4">
         <AdminField label="Город">
@@ -282,19 +282,19 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
           <input v-model.trim="form.sellerPhone" :class="inputClass" inputmode="tel" placeholder="+996 555 000 000" required>
         </AdminField>
 
-        <label class="flex min-h-12 items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 text-sm font-black text-slate-800">
+        <label class="flex min-h-10 items-center justify-between gap-4 rounded-lg bg-slate-50 px-4 text-sm font-bold text-slate-800">
           Лучшее предложение
           <input v-model="form.isFeatured" class="h-5 w-5 accent-emerald-600" type="checkbox">
         </label>
       </div>
     </section>
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 class="text-lg font-black">Описание и фото</h2>
+    <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 class="text-lg font-bold">Описание и фото</h2>
 
       <div class="mt-4 grid gap-4">
         <AdminField label="Описание">
-          <textarea v-model.trim="form.description" class="focus-ring min-h-32 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950 placeholder:text-slate-400" placeholder="Кратко опишите состояние, комплектацию и историю." />
+          <textarea v-model.trim="form.description" class="focus-ring min-h-32 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400" placeholder="Кратко опишите состояние, комплектацию и историю." />
         </AdminField>
 
         <AdminField label="Фото">
@@ -307,7 +307,7 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
               @change="uploadImages"
             >
 
-            <p v-if="isUploadingImages" class="rounded-2xl bg-slate-50 p-3 text-sm font-bold text-slate-500">
+            <p v-if="isUploadingImages" class="rounded-lg bg-slate-50 p-3 text-sm font-bold text-slate-500">
               Загружаем фото...
             </p>
 
@@ -315,11 +315,11 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
               <article
                 v-for="image in form.images"
                 :key="image"
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+                class="overflow-hidden rounded-lg border border-slate-200 bg-white"
               >
                 <img :src="image" alt="" class="aspect-[4/3] w-full object-cover">
                 <button
-                  class="w-full bg-slate-50 px-3 py-2 text-sm font-black text-rose-700"
+                  class="w-full bg-slate-50 px-3 py-2 text-sm font-bold text-rose-700"
                   type="button"
                   @click="removeImage(image)"
                 >
@@ -331,17 +331,17 @@ const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-w
         </AdminField>
 
         <AdminField label="Фото URL" hint="Дополнительно: каждая ссылка с новой строки.">
-          <textarea v-model="imageText" class="focus-ring min-h-24 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950 placeholder:text-slate-400" placeholder="https://..." />
+          <textarea v-model="imageText" class="focus-ring min-h-24 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400" placeholder="https://..." />
         </AdminField>
       </div>
     </section>
 
-    <p v-if="errorMessage" class="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+    <p v-if="errorMessage" class="rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
       {{ errorMessage }}
     </p>
 
     <button
-      class="focus-ring sticky bottom-4 min-h-14 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white shadow-lg shadow-emerald-600/25 transition disabled:cursor-not-allowed disabled:opacity-60"
+      class="focus-ring sticky bottom-4 min-h-11 rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white shadow-sm shadow-emerald-600/25 transition disabled:cursor-not-allowed disabled:opacity-60"
       :disabled="isSubmitting"
       type="submit"
     >

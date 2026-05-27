@@ -88,11 +88,11 @@ useHead({
 
 <template>
   <AdminShell title="Редактировать авто" subtitle="Можно менять основные данные, характеристики, продавца и фотографии.">
-    <p v-if="errorMessage" class="mb-4 rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+    <p v-if="errorMessage" class="mb-4 rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
       {{ errorMessage }}
     </p>
 
-    <p v-if="isLoading" class="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
+    <p v-if="isLoading" class="rounded-lg bg-slate-50 p-4 text-sm font-bold text-slate-500">
       Загружаем автомобиль...
     </p>
 
@@ -100,7 +100,7 @@ useHead({
       <NuxtLink
         v-if="savedId"
         :to="{ path: `/cars/${savedId}`, query: { from: 'admin' } }"
-        class="focus-ring min-h-12 rounded-2xl bg-emerald-600 px-4 py-3 text-center text-sm font-black text-white"
+        class="focus-ring min-h-10 rounded-lg bg-emerald-600 px-4 py-3 text-center text-sm font-bold text-white"
       >
         Открыть объявление
       </NuxtLink>

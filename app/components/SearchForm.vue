@@ -42,18 +42,18 @@ const reset = () => {
 </script>
 
 <template>
-  <form class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft" @submit.prevent="submit">
-    <div class="flex items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3 sm:px-5">
+  <form class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft" @submit.prevent="submit">
+    <div class="flex items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-3 py-2.5 sm:px-4">
       <div class="flex min-w-0 items-center gap-3">
-        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-xs font-black text-emerald-800">AUTO</span>
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-[11px] font-bold text-emerald-800">AUTO</span>
         <div class="min-w-0">
-          <p class="truncate text-sm font-black text-slate-950">Поиск и фильтры</p>
+          <p class="truncate text-sm font-bold text-slate-950">Поиск и фильтры</p>
           <p class="text-xs font-semibold text-slate-500">{{ hasActiveFilters ? 'Фильтры применены' : 'Марка, модель, цена, город' }}</p>
         </div>
       </div>
 
       <button
-        class="focus-ring min-h-10 shrink-0 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950"
+        class="focus-ring min-h-9 shrink-0 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-950"
         type="button"
         :aria-expanded="isOpen"
         @click="isOpen = !isOpen"
@@ -62,12 +62,12 @@ const reset = () => {
       </button>
     </div>
 
-    <div v-show="isOpen" class="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4 lg:p-5">
+    <div v-show="isOpen" class="grid gap-3 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-4">
       <label class="grid gap-1.5 text-xs font-bold text-slate-800 sm:col-span-2 lg:col-span-2">
         Поиск авто
         <input
           v-model.trim="filters.query"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           placeholder="Camry, Бишкек, дилер, кожа"
           type="search"
         >
@@ -75,7 +75,7 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-xs font-bold text-slate-800">
         Марка
-        <select v-model="filters.brand" class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950">
+        <select v-model="filters.brand" class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950">
           <option value="">Любая</option>
           <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
         </select>
@@ -85,7 +85,7 @@ const reset = () => {
         Модель
         <input
           v-model.trim="filters.model"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           placeholder="Например, Golf"
           type="text"
         >
@@ -95,7 +95,7 @@ const reset = () => {
         По описанию
         <input
           v-model.trim="filters.description"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           placeholder="Без ДТП, кожа, 4WD"
           type="text"
         >
@@ -105,7 +105,7 @@ const reset = () => {
         Цена до
         <input
           v-model="filters.maxPrice"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           inputmode="numeric"
           min="0"
           placeholder="30000"
@@ -117,7 +117,7 @@ const reset = () => {
         Год от
         <input
           v-model="filters.yearFrom"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           inputmode="numeric"
           min="1990"
           placeholder="2020"
@@ -129,7 +129,7 @@ const reset = () => {
         Пробег до
         <input
           v-model="filters.maxMileage"
-          class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
+          class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950 placeholder:text-slate-400"
           inputmode="numeric"
           min="0"
           placeholder="80000"
@@ -139,7 +139,7 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-xs font-bold text-slate-800">
         Тип топлива
-        <select v-model="filters.fuel" class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950">
+        <select v-model="filters.fuel" class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950">
           <option value="">Любой</option>
           <option v-for="fuel in fuels" :key="fuel" :value="fuel">{{ fuel }}</option>
         </select>
@@ -147,14 +147,14 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-xs font-bold text-slate-800">
         Город
-        <select v-model="filters.city" class="focus-ring min-h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950">
+        <select v-model="filters.city" class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950">
           <option value="">Любой</option>
           <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
         </select>
       </label>
 
       <button
-        class="focus-ring mt-auto min-h-11 rounded-2xl bg-emerald-600 px-5 text-sm font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-1"
+        class="focus-ring mt-auto min-h-10 rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-1"
         :disabled="props.isLoading"
         type="submit"
       >
@@ -162,7 +162,7 @@ const reset = () => {
       </button>
 
       <button
-        class="focus-ring mt-auto min-h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-950 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        class="focus-ring mt-auto min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="props.isLoading || !hasActiveFilters"
         type="button"
         @click="reset"

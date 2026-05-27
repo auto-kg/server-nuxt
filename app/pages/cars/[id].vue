@@ -134,10 +134,10 @@ useHead({
 
     <main class="bg-slate-50 pb-24 pt-5 sm:pt-8 lg:pb-8">
       <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-        <section v-if="showAdminNavigation" class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
+        <section v-if="showAdminNavigation" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
           <div class="grid grid-cols-2 gap-2">
             <button
-              class="focus-ring min-h-11 rounded-2xl bg-slate-950 px-3 text-sm font-black text-white"
+              class="focus-ring min-h-11 rounded-lg bg-slate-950 px-3 text-sm font-bold text-white"
               type="button"
               @click="goBackToAdmin"
             >
@@ -146,14 +146,14 @@ useHead({
 
             <NuxtLink
               :to="`/admin/cars/${car.id}/edit`"
-              class="focus-ring inline-flex min-h-11 items-center justify-center rounded-2xl bg-emerald-600 px-3 text-sm font-black text-white"
+              class="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-600 px-3 text-sm font-bold text-white"
             >
               Редактировать
             </NuxtLink>
           </div>
         </section>
 
-        <NuxtLink to="/" class="focus-ring inline-flex min-h-11 items-center rounded-full px-1 text-sm font-black text-slate-600 hover:text-slate-950">
+        <NuxtLink to="/" class="focus-ring inline-flex min-h-11 items-center rounded-full px-1 text-sm font-bold text-slate-600 hover:text-slate-950">
           Назад к каталогу
         </NuxtLink>
 
@@ -161,16 +161,16 @@ useHead({
         <div class="space-y-6">
           <CarGallery :images="car.images" :title="car.title" />
 
-          <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div class="mb-3">
                   <PriceBadge :label="car.priceBadge" />
                 </div>
-                <h1 class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{{ car.title }}</h1>
-                <p class="mt-3 text-base font-bold text-slate-600">{{ car.city }}</p>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{{ car.title }}</h1>
+                <p class="mt-3 text-sm font-bold text-slate-600">{{ car.city }}</p>
               </div>
-              <p class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{{ formatPrice(car.price) }}</p>
+              <p class="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{{ formatPrice(car.price) }}</p>
             </div>
           </section>
 
@@ -185,9 +185,9 @@ useHead({
             />
           </div>
 
-          <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <h2 class="text-xl font-black tracking-tight text-slate-950">Описание</h2>
-            <p class="mt-3 text-base leading-8 text-slate-600">{{ car.description }}</p>
+          <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <h2 class="text-xl font-bold tracking-tight text-slate-950">Описание</h2>
+            <p class="mt-3 text-sm leading-8 text-slate-600">{{ car.description }}</p>
           </section>
         </div>
 
@@ -201,7 +201,7 @@ useHead({
         </div>
       </div>
 
-      <section class="py-10 sm:py-12">
+      <section class="py-8 sm:py-10">
         <SectionHeader title="Похожие автомобили" subtitle="Близкие варианты по цене, марке или типу топлива." />
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <CarCard v-for="similarCar in similarCars" :key="similarCar.id" :car="similarCar" />
@@ -224,11 +224,11 @@ useHead({
       >
         <div class="mx-auto flex max-w-lg items-center gap-3">
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-black text-slate-950">{{ car.seller.name }}</p>
+            <p class="truncate text-sm font-bold text-slate-950">{{ car.seller.name }}</p>
             <p class="text-sm font-bold text-slate-600">{{ formatPrice(car.price) }}</p>
           </div>
           <a
-            class="focus-ring inline-flex min-h-11 shrink-0 items-center rounded-2xl bg-emerald-600 px-4 text-sm font-black text-white shadow-lg shadow-emerald-600/20"
+            class="focus-ring inline-flex min-h-11 shrink-0 items-center rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm shadow-emerald-600/20"
             :href="whatsappUrl"
             rel="noopener noreferrer"
             target="_blank"

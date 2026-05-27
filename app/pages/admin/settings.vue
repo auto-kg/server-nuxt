@@ -21,7 +21,7 @@ const settings = reactive<SiteSettings>({
   footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
 })
 
-const inputClass = 'focus-ring min-h-12 rounded-2xl border border-slate-200 bg-white px-4 text-base font-bold text-slate-950 placeholder:text-slate-400'
+const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 placeholder:text-slate-400'
 
 watch(
   () => settingsResponse.value?.data,
@@ -109,7 +109,7 @@ useHead({
 <template>
   <AdminShell title="Настройки сайта" subtitle="Редкие действия: логотип, главный фон и тексты.">
     <form class="grid gap-4" @submit.prevent="save">
-      <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-4">
           <AdminField label="Логотип / название">
             <input v-model.trim="settings.logoText" :class="inputClass">
@@ -128,30 +128,30 @@ useHead({
           </AdminField>
 
           <AdminField label="Подзаголовок hero">
-            <textarea v-model.trim="settings.heroSubtitle" class="focus-ring min-h-24 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
+            <textarea v-model.trim="settings.heroSubtitle" class="focus-ring min-h-24 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
           </AdminField>
 
           <AdminField label="Главное изображение">
             <div class="grid gap-3">
-              <img :src="settings.heroImage" alt="" class="aspect-[16/9] rounded-2xl object-cover">
+              <img :src="settings.heroImage" alt="" class="aspect-[16/9] rounded-lg object-cover">
               <input class="text-sm font-bold text-slate-700" accept="image/jpeg,image/png,image/webp,image/gif" type="file" @change="uploadHeroImage">
-              <textarea v-model.trim="settings.heroImage" class="focus-ring min-h-20 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
+              <textarea v-model.trim="settings.heroImage" class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
               <p v-if="isUploadingHero" class="text-sm font-bold text-slate-500">Загружаем изображение...</p>
             </div>
           </AdminField>
 
           <AdminField label="Текст footer">
-            <textarea v-model.trim="settings.footerDescription" class="focus-ring min-h-24 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-950" />
+            <textarea v-model.trim="settings.footerDescription" class="focus-ring min-h-24 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
           </AdminField>
         </div>
       </section>
 
-      <p v-if="errorMessage" class="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+      <p v-if="errorMessage" class="rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
         {{ errorMessage }}
       </p>
 
       <button
-        class="focus-ring min-h-14 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white shadow-lg shadow-emerald-600/20 disabled:opacity-60"
+        class="focus-ring min-h-11 rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white shadow-sm shadow-emerald-600/20 disabled:opacity-60"
         :disabled="isSaving"
         type="submit"
       >

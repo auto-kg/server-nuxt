@@ -38,14 +38,14 @@ useHead({
             <CarCard v-for="car in favoriteCars" :key="car.id" :car="car" />
           </div>
 
-          <div v-else class="mt-6 rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
-            <h2 class="text-xl font-black text-slate-950">Пока пусто</h2>
+          <div v-else class="mt-6 rounded-lg border border-dashed border-slate-200 bg-white p-6 text-center">
+            <h2 class="text-xl font-bold text-slate-950">Пока пусто</h2>
             <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">
               Добавляйте автомобили в избранное из каталога или карточки.
             </p>
             <NuxtLink
               to="/"
-              class="focus-ring mt-4 inline-flex min-h-12 items-center rounded-2xl bg-emerald-600 px-5 text-sm font-black text-white"
+              class="focus-ring mt-4 inline-flex min-h-10 items-center rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white"
             >
               Перейти в каталог
             </NuxtLink>
@@ -59,7 +59,7 @@ useHead({
             <CarCard v-for="car in recentlyViewedCars" :key="car.id" :car="car" />
           </div>
 
-          <p v-else class="mt-6 rounded-2xl bg-white p-5 text-sm font-bold text-slate-500">
+          <p v-else class="mt-6 rounded-lg bg-white p-5 text-sm font-bold text-slate-500">
             Просмотренные автомобили появятся здесь после открытия карточек.
           </p>
         </section>

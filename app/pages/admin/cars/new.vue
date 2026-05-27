@@ -75,13 +75,13 @@ useHead({
 
 <template>
   <AdminShell title="Новое авто" subtitle="Форма оптимизирована для телефона и Telegram Mini App.">
-    <p v-if="errorMessage" class="mb-4 rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">
+    <p v-if="errorMessage" class="mb-4 rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
       {{ errorMessage }}
     </p>
 
     <div v-if="createdId" class="grid gap-4">
       <button
-        class="focus-ring min-h-14 rounded-2xl bg-emerald-600 px-5 text-base font-black text-white"
+        class="focus-ring min-h-11 rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white"
         type="button"
         @click="router.push({ path: `/cars/${createdId}`, query: { from: 'admin' } })"
       >
@@ -89,7 +89,7 @@ useHead({
       </button>
 
       <button
-        class="focus-ring min-h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-black text-slate-950"
+        class="focus-ring min-h-11 rounded-lg border border-slate-200 bg-white px-5 text-sm font-bold text-slate-950"
         type="button"
         @click="createdId = ''"
       >

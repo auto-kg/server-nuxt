@@ -40,7 +40,7 @@ const markerClass = (type: string) => {
         <article
           v-for="toast in toasts"
           :key="toast.id"
-          class="pointer-events-auto rounded-2xl border p-4 shadow-xl"
+          class="pointer-events-auto rounded-lg border p-4 shadow-xl"
           :class="toastClass(toast.type)"
           role="alert"
         >
@@ -48,14 +48,14 @@ const markerClass = (type: string) => {
             <span class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" :class="markerClass(toast.type)" />
 
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-black">{{ toast.title }}</p>
+              <p class="text-sm font-bold">{{ toast.title }}</p>
               <p v-if="toast.message" class="mt-1 text-sm font-semibold leading-5 opacity-80">
                 {{ toast.message }}
               </p>
             </div>
 
             <button
-              class="focus-ring -mr-1 -mt-1 min-h-8 rounded-xl px-2 text-sm font-black opacity-70 hover:opacity-100"
+              class="focus-ring -mr-1 -mt-1 min-h-8 rounded-xl px-2 text-sm font-bold opacity-70 hover:opacity-100"
               type="button"
               @click="removeToast(toast.id)"
             >

@@ -48,7 +48,7 @@ onBeforeUnmount(() => {
 
     <button
       v-if="canScroll"
-      class="focus-ring absolute -left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-2xl font-black text-slate-900 shadow-soft transition hover:bg-slate-50 lg:flex"
+      class="focus-ring absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-xl font-bold text-slate-900 shadow-soft transition hover:bg-slate-50 lg:flex"
       type="button"
       aria-label="Показать предыдущие"
       @click="scrollByPage('prev')"
@@ -57,7 +57,7 @@ onBeforeUnmount(() => {
     </button>
     <button
       v-if="canScroll"
-      class="focus-ring absolute -right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-2xl font-black text-slate-900 shadow-soft transition hover:bg-slate-50 lg:flex"
+      class="focus-ring absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-xl font-bold text-slate-900 shadow-soft transition hover:bg-slate-50 lg:flex"
       type="button"
       aria-label="Показать следующие"
       @click="scrollByPage('next')"
