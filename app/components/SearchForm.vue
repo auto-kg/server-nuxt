@@ -17,18 +17,17 @@ const emit = defineEmits<{
   reset: []
 }>()
 
-const filters = reactive<CarSearchFilters>({
-  query: '',
-  brand: '',
-  model: '',
-  description: '',
-  maxPrice: '',
-  yearFrom: '',
-  maxMileage: '',
-  fuel: '',
-  city: ''
-})
+const filters = reactive<CarSearchFilters>(createDefaultCarSearchFilters())
 const isOpen = ref(true)
+const isSyncingInitialFilters = ref(false)
+
+const filterKeys = Object.keys(createDefaultCarSearchFilters()) as Array<keyof CarSearchFilters>
+const normalizeFilters = (value?: Partial<CarSearchFilters>): CarSearchFilters => ({
+  ...createDefaultCarSearchFilters(),
+  ...value
+})
+const areFiltersEqual = (first: CarSearchFilters, second: CarSearchFilters) =>
+  filterKeys.every((key) => first[key] === second[key])
 
 const brands = computed(() => [...new Set(props.cars.map((car) => car.brand))].sort())
 const fuels = computed(() => [...new Set(props.cars.map((car) => car.fuel))].sort())
@@ -41,7 +40,17 @@ watch(
   () => props.initialFilters,
   (value) => {
     if (value) {
-      Object.assign(filters, createDefaultCarSearchFilters(), value)
+      const nextFilters = normalizeFilters(value)
+
+      if (areFiltersEqual(filters, nextFilters)) {
+        return
+      }
+
+      isSyncingInitialFilters.value = true
+      Object.assign(filters, nextFilters)
+      nextTick(() => {
+        isSyncingInitialFilters.value = false
+      })
     }
   },
   { immediate: true }
@@ -50,6 +59,10 @@ watch(
 watch(
   filters,
   () => {
+    if (isSyncingInitialFilters.value) {
+      return
+    }
+
     emit('change', { ...filters })
   },
   { deep: true }

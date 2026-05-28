@@ -11,6 +11,9 @@ const filters = ref<CarSearchFilters>(carSearchFiltersFromQuery(route.query))
 const currentPage = ref(1)
 const viewMode = ref<'grid' | 'list'>('grid')
 const perPage = 9
+const filterKeys = Object.keys(createDefaultCarSearchFilters()) as Array<keyof CarSearchFilters>
+const areFiltersEqual = (first: CarSearchFilters, second: CarSearchFilters) =>
+  filterKeys.every((key) => first[key] === second[key])
 
 const filteredCars = computed(() => filterCarsLocally(allCars.value, filters.value))
 const totalPages = computed(() => Math.max(Math.ceil(filteredCars.value.length / perPage), 1))
@@ -33,6 +36,10 @@ watch(
 )
 
 const updateFilters = (nextFilters: CarSearchFilters) => {
+  if (areFiltersEqual(filters.value, nextFilters)) {
+    return
+  }
+
   filters.value = { ...nextFilters }
 }
 
