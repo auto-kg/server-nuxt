@@ -9,6 +9,7 @@ const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const filters = ref<CarSearchFilters>(carSearchFiltersFromQuery(route.query))
 const currentPage = ref(1)
+const viewMode = ref<'grid' | 'list'>('grid')
 const perPage = 9
 
 const filteredCars = computed(() => filterCarsLocally(allCars.value, filters.value))
@@ -90,10 +91,34 @@ useHead({
             title="Каталог автомобилей"
             :subtitle="filteredCars.length ? `${filteredCars.length} предложений, показаны ${pageStart + 1}-${pageEnd}` : 'Нет предложений по выбранным условиям'"
             compact
-          />
+          >
+            <div class="inline-grid grid-cols-2 rounded-lg border border-slate-200 bg-slate-50 p-1">
+              <button
+                class="focus-ring min-h-9 rounded-md px-3 text-sm font-bold transition"
+                :class="viewMode === 'grid' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-950'"
+                type="button"
+                @click="viewMode = 'grid'"
+              >
+                Блоки
+              </button>
 
-          <div v-if="paginatedCars.length" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+              <button
+                class="focus-ring min-h-9 rounded-md px-3 text-sm font-bold transition"
+                :class="viewMode === 'list' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-950'"
+                type="button"
+                @click="viewMode = 'list'"
+              >
+                Строки
+              </button>
+            </div>
+          </SectionHeader>
+
+          <div v-if="paginatedCars.length && viewMode === 'grid'" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
             <CarCard v-for="car in paginatedCars" :key="car.id" :car="car" />
+          </div>
+
+          <div v-else-if="paginatedCars.length" class="mt-4 grid gap-3">
+            <CarListItem v-for="car in paginatedCars" :key="car.id" :car="car" />
           </div>
 
           <div v-else class="mt-5 rounded-lg border border-slate-200 bg-white p-6 text-center">
