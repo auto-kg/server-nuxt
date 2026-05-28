@@ -6,13 +6,17 @@ import { siteSettings } from '../db/schema'
 const settingsKey = 'site'
 
 export const defaultSiteSettings: SiteSettings = {
-  logoText: 'AutoHub KG',
-  logoInitial: 'A',
+  logoText: 'ЛЯМБАР',
+  logoInitial: 'L',
+  logoImage: '/uploads/site-logo.png',
   heroBadge: 'Проверенные автомобили по всему Кыргызстану',
   heroTitle: 'Go AutoHub KG.',
   heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана с быстрым поиском и честными карточками.',
   heroImage: '/uploads/site-hero.png',
-  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
+  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.',
+  telegramUrl: '',
+  instagramUrl: '',
+  whatsappUrl: ''
 }
 
 let memorySettings: SiteSettings = { ...defaultSiteSettings }
@@ -20,11 +24,15 @@ let memorySettings: SiteSettings = { ...defaultSiteSettings }
 const normalizeSettings = (value: Partial<SiteSettings>): SiteSettings => ({
   logoText: value.logoText?.trim() || defaultSiteSettings.logoText,
   logoInitial: (value.logoInitial?.trim() || value.logoText?.trim().charAt(0) || defaultSiteSettings.logoInitial).slice(0, 2).toUpperCase(),
+  logoImage: value.logoImage?.trim() || defaultSiteSettings.logoImage,
   heroBadge: value.heroBadge?.trim() || defaultSiteSettings.heroBadge,
   heroTitle: value.heroTitle?.trim() || defaultSiteSettings.heroTitle,
   heroSubtitle: value.heroSubtitle?.trim() || defaultSiteSettings.heroSubtitle,
   heroImage: value.heroImage?.trim() || defaultSiteSettings.heroImage,
-  footerDescription: value.footerDescription?.trim() || defaultSiteSettings.footerDescription
+  footerDescription: value.footerDescription?.trim() || defaultSiteSettings.footerDescription,
+  telegramUrl: value.telegramUrl?.trim() || '',
+  instagramUrl: value.instagramUrl?.trim() || '',
+  whatsappUrl: value.whatsappUrl?.trim() || ''
 })
 
 export const getSiteSettings = async () => {

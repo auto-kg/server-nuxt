@@ -14,6 +14,10 @@ const badgeClass = computed(() => {
     return 'bg-sky-100 text-sky-800'
   }
 
+  if (props.label === 'Срочно') {
+    return 'bg-rose-100 text-rose-800'
+  }
+
   return 'bg-amber-100 text-amber-800'
 })
 </script>

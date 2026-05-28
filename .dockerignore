@@ -13,6 +13,7 @@ uploads
 public/uploads/*
 !public/uploads/.gitkeep
 !public/uploads/site-hero.png
+!public/uploads/site-logo.png
 
 logs
 *.log

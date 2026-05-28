@@ -63,6 +63,7 @@ export const cars = pgTable('cars', {
   color: text('color').default('').notNull(),
   description: text('description').default('').notNull(),
   isFeatured: boolean('is_featured').default(false).notNull(),
+  isUrgent: boolean('is_urgent').default(false).notNull(),
   status: text('status').default('published').notNull(),
   ...timestamps
 })

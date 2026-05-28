@@ -68,7 +68,8 @@ const rowsToCars = (rows: CarRow[]) => {
         phone: row.seller.phone,
         responseTime: ''
       },
-      isFeatured: row.car.isFeatured
+      isFeatured: row.car.isFeatured,
+      isUrgent: row.car.isUrgent
     })
   }
 
@@ -271,7 +272,8 @@ export const createCarRepository = async (payload: AdminCarPayload) => {
       power: payload.power,
       color: payload.color.trim(),
       description: payload.description.trim(),
-      isFeatured: payload.isFeatured
+      isFeatured: payload.isFeatured,
+      isUrgent: Boolean(payload.isUrgent)
     })
 
     await tx.insert(carImages).values(
@@ -333,6 +335,7 @@ export const updateCarRepository = async (id: string, payload: AdminCarPayload) 
       color: payload.color.trim(),
       description: payload.description.trim(),
       isFeatured: payload.isFeatured,
+      isUrgent: Boolean(payload.isUrgent),
       updatedAt: new Date()
     }).where(eq(cars.id, id))
 

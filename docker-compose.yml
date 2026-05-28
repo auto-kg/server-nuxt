@@ -32,7 +32,10 @@ services:
       ADMIN_TELEGRAM_IDS: ${ADMIN_TELEGRAM_IDS:-}
       TELEGRAM_INIT_DATA_MAX_AGE_SECONDS: ${TELEGRAM_INIT_DATA_MAX_AGE_SECONDS:-86400}
       NUXT_ALLOWED_HOST: ${NUXT_ALLOWED_HOST}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-}
       NUXT_HMR_HOST: ${NUXT_HMR_HOST:-}
+      BOT_NOTIFY_URL: ${BOT_NOTIFY_URL:-}
+      BOT_NOTIFY_SECRET: ${BOT_NOTIFY_SECRET:-}
       STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
       UPLOADS_DIR: ${UPLOADS_DIR:-/app/.output/public/uploads}
       PUBLIC_UPLOADS_BASE_URL: ${PUBLIC_UPLOADS_BASE_URL:-/uploads}
@@ -44,6 +47,8 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
     ports:
       - "127.0.0.1:${NUXT_HOST_PORT:-3001}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ${UPLOADS_HOST_DIR:-./uploads}/cars:${UPLOADS_DIR:-/app/.output/public/uploads}/cars
       - ${UPLOADS_HOST_DIR:-./uploads}/site:${UPLOADS_DIR:-/app/.output/public/uploads}/site

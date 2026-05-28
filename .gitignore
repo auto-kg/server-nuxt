@@ -13,7 +13,8 @@ dist/
 public/uploads/*
 !public/uploads/.gitkeep
 !public/uploads/site-hero.png
-uploads/
+!public/uploads/site-logo.png
+/uploads/
 
 # Local environment
 .env

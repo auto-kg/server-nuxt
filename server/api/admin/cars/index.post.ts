@@ -1,6 +1,7 @@
 import type { AdminCarPayload } from '../../../../app/types/car'
 import { createCarRepository } from '../../../repositories/cars'
 import { requireAdmin } from '../../../utils/adminAuth'
+import { notifyNewCar } from '../../../utils/botNotify'
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -14,7 +15,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const created = await createCarRepository(body)
+  await notifyNewCar(event, created)
+
   return {
-    data: await createCarRepository(body)
+    data: created
   }
 })

@@ -164,8 +164,9 @@ useHead({
           <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <div class="mb-3">
+                <div class="mb-3 flex flex-wrap gap-2">
                   <PriceBadge :label="car.priceBadge" />
+                  <PriceBadge v-if="car.isUrgent" label="Срочно" />
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{{ car.title }}</h1>
                 <p class="mt-3 text-sm font-bold text-slate-600">{{ car.city }}</p>

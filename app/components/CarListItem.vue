@@ -25,6 +25,7 @@ const favorite = computed(() => isFavorite(props.car.id))
       <div class="min-w-0">
         <div class="flex flex-wrap items-center gap-2">
           <PriceBadge :label="car.priceBadge" />
+          <PriceBadge v-if="car.isUrgent" label="Срочно" />
           <span class="text-xs font-bold text-slate-500">{{ car.city }}</span>
         </div>
 

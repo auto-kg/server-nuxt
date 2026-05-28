@@ -10,18 +10,39 @@ const { data: categoriesResponse } = await useFetch<{ data: HomeCategory[] }>('/
 const router = useRouter()
 const fallbackHeroImage = '/uploads/site-hero.png'
 const fallbackSettings: SiteSettings = {
-  logoText: 'AutoHub KG',
-  logoInitial: 'A',
+  logoText: 'ЛЯМБАР',
+  logoInitial: 'L',
+  logoImage: '/uploads/site-logo.png',
   heroBadge: 'Проверенные автомобили по всему Кыргызстану',
   heroTitle: 'Go AutoHub KG.',
   heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана с быстрым поиском и честными карточками.',
   heroImage: fallbackHeroImage,
-  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
+  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.',
+  telegramUrl: '',
+  instagramUrl: '',
+  whatsappUrl: ''
 }
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const categories = computed(() => categoriesResponse.value?.data ?? [])
 const settings = computed(() => settingsResponse.value?.data ?? fallbackSettings)
 const heroImage = computed(() => settings.value.heroImage || fallbackHeroImage)
+const socialLinks = computed(() => [
+  {
+    label: 'Telegram',
+    url: settings.value.telegramUrl,
+    icon: 'telegram'
+  },
+  {
+    label: 'Instagram',
+    url: settings.value.instagramUrl,
+    icon: 'instagram'
+  },
+  {
+    label: 'WhatsApp',
+    url: settings.value.whatsappUrl,
+    icon: 'whatsapp'
+  }
+].filter((link) => link.url.trim()))
 const activeFilters = ref<CarSearchFilters>(createDefaultCarSearchFilters())
 const matchingCars = computed(() => filterCarsLocally(allCars.value, activeFilters.value))
 
@@ -264,8 +285,30 @@ useHead({
               {{ settings?.footerDescription }}
             </p>
           </div>
-          <nav class="flex flex-wrap gap-4 text-sm font-bold text-slate-600">
+          <nav class="flex flex-wrap items-center gap-3 text-sm font-bold text-slate-600">
             <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/favorites">Избранное</NuxtLink>
+            <a
+              v-for="link in socialLinks"
+              :key="link.label"
+              :href="link.url"
+              :aria-label="link.label"
+              class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <svg v-if="link.icon === 'telegram'" class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21.8 4.6 18.5 20c-.2.9-.8 1.1-1.6.7l-4.8-3.6-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.6 1.8 12.1c-1-.3-1-1 .2-1.5L20.3 3.5c.9-.3 1.7.2 1.5 1.1Z" fill="currentColor" />
+              </svg>
+              <svg v-else-if="link.icon === 'instagram'" class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2" />
+                <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2" />
+                <circle cx="17" cy="7" r="1.2" fill="currentColor" />
+              </svg>
+              <svg v-else class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5.1 19 6 15.6A7.8 7.8 0 1 1 9.2 19l-4.1 0Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" />
+                <path d="M9.6 8.7c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.7 1.6c.1.2.1.4-.1.6l-.4.5c-.1.2-.2.3 0 .6.4.8 1.2 1.7 2.1 2.2.3.2.5.2.7-.1l.6-.7c.2-.2.4-.2.7-.1l1.5.7c.3.2.4.3.4.6-.1.8-.8 1.7-1.7 1.8-1.4.2-3.5-.7-5.2-2.3-1.6-1.6-2.7-3.8-2.4-5 .1-.5.5-.9.9-1Z" fill="currentColor" />
+              </svg>
+            </a>
           </nav>
         </div>
       </div>
