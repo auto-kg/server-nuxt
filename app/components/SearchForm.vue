@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import type { Car, CarSearchFilters } from '~/types/car'
+import { vehicleTypes } from '~/utils/vehicleType'
 
 const props = defineProps<{
   cars: Car[]
   isLoading?: boolean
+  resultCount?: number
+  initialFilters?: Partial<CarSearchFilters>
+  submitLabel?: string
+  compact?: boolean
 }>()
 
 const emit = defineEmits<{
   search: [filters: CarSearchFilters]
+  change: [filters: CarSearchFilters]
   reset: []
 }>()
 
@@ -31,6 +37,24 @@ const hasActiveFilters = computed(() =>
   Object.values(filters).some((value) => String(value).trim())
 )
 
+watch(
+  () => props.initialFilters,
+  (value) => {
+    if (value) {
+      Object.assign(filters, createDefaultCarSearchFilters(), value)
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  filters,
+  () => {
+    emit('change', { ...filters })
+  },
+  { deep: true }
+)
+
 const submit = () => {
   emit('search', { ...filters })
 }
@@ -48,7 +72,9 @@ const reset = () => {
         <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-[11px] font-bold text-emerald-800">AUTO</span>
         <div class="min-w-0">
           <p class="truncate text-sm font-bold text-slate-950">Поиск и фильтры</p>
-          <p class="text-xs font-semibold text-slate-500">{{ hasActiveFilters ? 'Фильтры применены' : 'Марка, модель, цена, город' }}</p>
+          <p class="text-xs font-semibold text-slate-500">
+            {{ props.resultCount === undefined ? (hasActiveFilters ? 'Фильтры применены' : 'Марка, модель, цена, город') : `${props.resultCount} авто подходит` }}
+          </p>
         </div>
       </div>
 
@@ -71,6 +97,14 @@ const reset = () => {
           placeholder="Camry, Бишкек, дилер, кожа"
           type="search"
         >
+      </label>
+
+      <label class="grid gap-1.5 text-xs font-bold text-slate-800">
+        Тип транспорта
+        <select v-model="filters.vehicleType" class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-950">
+          <option value="">Любой</option>
+          <option v-for="type in vehicleTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+        </select>
       </label>
 
       <label class="grid gap-1.5 text-xs font-bold text-slate-800">
@@ -158,7 +192,7 @@ const reset = () => {
         :disabled="props.isLoading"
         type="submit"
       >
-        {{ props.isLoading ? 'Ищем...' : 'Найти авто' }}
+        {{ props.isLoading ? 'Ищем...' : (props.submitLabel ?? 'Найти авто') }}
       </button>
 
       <button

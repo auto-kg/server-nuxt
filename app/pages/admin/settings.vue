@@ -5,6 +5,7 @@ import type { SiteSettings } from '~/types/settings'
 
 const isSaving = ref(false)
 const isUploadingHero = ref(false)
+const isUploadingLogo = ref(false)
 const errorMessage = ref('')
 
 const { adminFetch, readyTelegramWebApp } = useAdminApi()
@@ -12,13 +13,17 @@ const { showSuccess, showError } = useAdminToast()
 const settingsResponse = ref<{ data: SiteSettings }>()
 
 const settings = reactive<SiteSettings>({
-  logoText: 'AutoHub KG',
-  logoInitial: 'A',
+  logoText: 'ЛЯМБАР',
+  logoInitial: 'L',
+  logoImage: '/uploads/site-logo.png',
   heroBadge: 'Проверенные автомобили по всему Кыргызстану',
   heroTitle: 'Go AutoHub KG.',
   heroSubtitle: 'Найдите лучшее авто в Бишкеке и крупных городах Кыргызстана.',
   heroImage: '/uploads/site-hero.png',
-  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.'
+  footerDescription: 'Автомобильный маркетплейс Кыргызстана на Nuxt 4 с mobile-first интерфейсом и админкой для Telegram Mini App.',
+  telegramUrl: '',
+  instagramUrl: '',
+  whatsappUrl: ''
 })
 
 const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 placeholder:text-slate-400'
@@ -79,6 +84,48 @@ const handleHeroImageError = (event: Event) => {
   image.src = '/uploads/site-hero.png'
 }
 
+const handleLogoImageError = (event: Event) => {
+  const image = event.target as HTMLImageElement
+
+  if (image.src.endsWith('/uploads/site-logo.png')) {
+    return
+  }
+
+  image.src = '/uploads/site-logo.png'
+}
+
+const uploadLogoImage = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  isUploadingLogo.value = true
+  errorMessage.value = ''
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('folder', 'site')
+
+    const response = await adminFetch<{ data: Array<{ path: string }> }>('/api/admin/uploads', {
+      method: 'POST',
+      body: formData
+    })
+
+    settings.logoImage = response.data[0]?.path ?? settings.logoImage
+    showSuccess('Логотип загружен', 'Не забудьте сохранить настройки.')
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить логотип'
+    showError('Не удалось загрузить логотип', errorMessage.value)
+  } finally {
+    input.value = ''
+    isUploadingLogo.value = false
+  }
+}
+
 const uploadHeroImage = async (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -129,6 +176,17 @@ useHead({
             <input v-model.trim="settings.logoInitial" :class="inputClass" maxlength="2">
           </AdminField>
 
+          <AdminField label="Изображение логотипа" hint="PNG/WebP с прозрачным фоном подойдет лучше всего. Если файл не загрузится, сайт покажет буквенную иконку.">
+            <div class="grid gap-3">
+              <div class="flex h-32 items-center justify-center rounded-lg bg-slate-950 p-4">
+                <img :src="settings.logoImage" alt="" class="max-h-full max-w-full object-contain" @error="handleLogoImageError">
+              </div>
+              <input class="text-sm font-bold text-slate-700" accept="image/jpeg,image/png,image/webp,image/gif" type="file" @change="uploadLogoImage">
+              <textarea v-model.trim="settings.logoImage" class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
+              <p v-if="isUploadingLogo" class="text-sm font-bold text-slate-500">Загружаем логотип...</p>
+            </div>
+          </AdminField>
+
           <AdminField label="Текст бейджа над заголовком">
             <input v-model.trim="settings.heroBadge" :class="inputClass">
           </AdminField>
@@ -154,6 +212,18 @@ useHead({
 
           <AdminField label="Текст footer">
             <textarea v-model.trim="settings.footerDescription" class="focus-ring min-h-24 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950" />
+          </AdminField>
+
+          <AdminField label="Telegram ссылка" hint="Например: https://t.me/lyambar_rassilka">
+            <input v-model.trim="settings.telegramUrl" :class="inputClass" inputmode="url" placeholder="https://t.me/...">
+          </AdminField>
+
+          <AdminField label="Instagram ссылка" hint="Например: https://instagram.com/username">
+            <input v-model.trim="settings.instagramUrl" :class="inputClass" inputmode="url" placeholder="https://instagram.com/...">
+          </AdminField>
+
+          <AdminField label="WhatsApp ссылка" hint="Например: https://wa.me/996555000000">
+            <input v-model.trim="settings.whatsappUrl" :class="inputClass" inputmode="url" placeholder="https://wa.me/...">
           </AdminField>
         </div>
       </section>

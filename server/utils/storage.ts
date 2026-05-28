@@ -37,7 +37,7 @@ const normalizePublicBaseUrl = (value: string) => {
 
 export const getUploadConfig = () => ({
   driver: process.env.STORAGE_DRIVER ?? 'local',
-  uploadsDir: process.env.UPLOADS_DIR ?? 'public/uploads',
+  uploadsDir: process.env.UPLOADS_DIR ?? 'uploads',
   publicBaseUrl: normalizePublicBaseUrl(process.env.PUBLIC_UPLOADS_BASE_URL ?? '/uploads'),
   maxFileSize: Number(process.env.UPLOAD_MAX_FILE_SIZE_MB ?? 8) * 1024 * 1024
 })

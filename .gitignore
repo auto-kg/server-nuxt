@@ -13,6 +13,8 @@ dist/
 public/uploads/*
 !public/uploads/.gitkeep
 !public/uploads/site-hero.png
+!public/uploads/site-logo.png
+/uploads/
 uploads/
 !server/routes/uploads/
 !server/routes/uploads/**

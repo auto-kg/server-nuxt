@@ -46,7 +46,8 @@ const payloadToCar = (payload: AdminCarPayload, id: string, priceBadge = 'Fair p
       phone: payload.sellerPhone.trim(),
       responseTime: ''
     },
-    isFeatured: payload.isFeatured
+    isFeatured: payload.isFeatured,
+    isUrgent: Boolean(payload.isUrgent)
   }
 }
 

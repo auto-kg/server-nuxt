@@ -15,6 +15,13 @@
       "when": 1779786376128,
       "tag": "0001_tidy_logan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779950000000,
+      "tag": "0002_add_is_urgent",
+      "breakpoints": true
     }
   ]
 }

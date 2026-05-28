@@ -26,6 +26,16 @@ POSTGRES_PASSWORD=change_this
 DATABASE_URL=postgres://autohub:change_this@postgres:5432/autohub
 ```
 
+Optional Telegram channel notifications after creating a car:
+
+```env
+PUBLIC_SITE_URL=https://your-public-site
+BOT_NOTIFY_URL=http://host.docker.internal:8091/notify/new-car
+BOT_NOTIFY_SECRET=the_same_secret_as_bot
+```
+
+Leave `BOT_NOTIFY_URL` empty to disable notifications.
+
 Start database:
 
 ```bash

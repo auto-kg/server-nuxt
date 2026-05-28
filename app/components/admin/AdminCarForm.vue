@@ -49,7 +49,8 @@ const createEmptyForm = (): AdminCarPayload => ({
   sellerType: 'Дилер',
   sellerPhone: '+996 ',
   images: [],
-  isFeatured: false
+  isFeatured: false,
+  isUrgent: false
 })
 
 const carToPayload = (car: Car): AdminCarPayload => ({
@@ -71,7 +72,8 @@ const carToPayload = (car: Car): AdminCarPayload => ({
   sellerType: car.seller.type,
   sellerPhone: car.seller.phone,
   images: [...car.images],
-  isFeatured: car.isFeatured
+  isFeatured: car.isFeatured,
+  isUrgent: Boolean(car.isUrgent)
 })
 
 const form = reactive<AdminCarPayload>(createEmptyForm())
@@ -94,6 +96,8 @@ const normalizedImages = computed(() =>
       .filter(Boolean)
   ]
 )
+
+const mainImage = computed(() => normalizedImages.value[0] ?? '')
 
 const uploadImages = async (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -138,6 +142,13 @@ const removeImage = (image: string) => {
   form.images = form.images.filter((currentImage) => currentImage !== image)
 }
 
+const makeMainImage = (image: string) => {
+  form.images = [
+    image,
+    ...form.images.filter((currentImage) => currentImage !== image)
+  ]
+}
+
 const submit = async () => {
   errorMessage.value = ''
   isSubmitting.value = true
@@ -167,7 +178,7 @@ const submit = async () => {
   }
 }
 
-const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 placeholder:text-slate-400'
+const inputClass = 'focus-ring min-h-10 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 placeholder:text-slate-400'
 </script>
 
 <template>
@@ -194,7 +205,7 @@ const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-wh
           <input v-model.trim="form.title" :class="inputClass" placeholder="Toyota Camry 70, 2.5 AT">
         </AdminField>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-[minmax(0,1fr)_minmax(5.5rem,28%)] gap-3">
           <AdminField label="Цена, $" >
             <input v-model.number="form.price" :class="inputClass" inputmode="numeric" min="1" required type="number">
           </AdminField>
@@ -214,34 +225,30 @@ const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-wh
       <h2 class="text-lg font-bold">Характеристики</h2>
 
       <div class="mt-4 grid gap-4">
-        <div class="grid grid-cols-2 gap-3">
-          <AdminField label="Топливо">
-            <input v-model.trim="form.fuel" :class="inputClass" list="admin-fuels" placeholder="Бензин">
-            <datalist id="admin-fuels">
-              <option v-for="fuel in props.dictionaries.fuels" :key="fuel" :value="fuel" />
-            </datalist>
-          </AdminField>
+        <AdminField label="Топливо">
+          <input v-model.trim="form.fuel" :class="inputClass" list="admin-fuels" placeholder="Бензин">
+          <datalist id="admin-fuels">
+            <option v-for="fuel in props.dictionaries.fuels" :key="fuel" :value="fuel" />
+          </datalist>
+        </AdminField>
 
-          <AdminField label="Коробка">
-            <input v-model.trim="form.transmission" :class="inputClass" list="admin-transmissions" placeholder="Автомат">
-            <datalist id="admin-transmissions">
-              <option v-for="transmission in props.dictionaries.transmissions" :key="transmission" :value="transmission" />
-            </datalist>
-          </AdminField>
-        </div>
+        <AdminField label="Коробка">
+          <input v-model.trim="form.transmission" :class="inputClass" list="admin-transmissions" placeholder="Автомат">
+          <datalist id="admin-transmissions">
+            <option v-for="transmission in props.dictionaries.transmissions" :key="transmission" :value="transmission" />
+          </datalist>
+        </AdminField>
 
-        <div class="grid grid-cols-2 gap-3">
-          <AdminField label="Привод">
-            <input v-model.trim="form.drivetrain" :class="inputClass" list="admin-drivetrains" placeholder="Передний">
-            <datalist id="admin-drivetrains">
-              <option v-for="drivetrain in props.dictionaries.drivetrains" :key="drivetrain" :value="drivetrain" />
-            </datalist>
-          </AdminField>
+        <AdminField label="Привод">
+          <input v-model.trim="form.drivetrain" :class="inputClass" list="admin-drivetrains" placeholder="Передний">
+          <datalist id="admin-drivetrains">
+            <option v-for="drivetrain in props.dictionaries.drivetrains" :key="drivetrain" :value="drivetrain" />
+          </datalist>
+        </AdminField>
 
-          <AdminField label="Мощность">
-            <input v-model.number="form.power" :class="inputClass" inputmode="numeric" min="0" type="number">
-          </AdminField>
-        </div>
+        <AdminField label="Мощность">
+          <input v-model.number="form.power" :class="inputClass" inputmode="numeric" min="0" type="number">
+        </AdminField>
 
         <AdminField label="Двигатель">
           <input v-model.trim="form.engine" :class="inputClass" placeholder="2.5 л">
@@ -282,10 +289,17 @@ const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-wh
           <input v-model.trim="form.sellerPhone" :class="inputClass" inputmode="tel" placeholder="+996 555 000 000" required>
         </AdminField>
 
-        <label class="flex min-h-10 items-center justify-between gap-4 rounded-lg bg-slate-50 px-4 text-sm font-bold text-slate-800">
-          Лучшее предложение
-          <input v-model="form.isFeatured" class="h-5 w-5 accent-emerald-600" type="checkbox">
-        </label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex min-h-10 min-w-0 items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 text-sm font-bold text-slate-800">
+            <span class="min-w-0 leading-4">Лучшее предложение</span>
+            <input v-model="form.isFeatured" class="h-5 w-5 shrink-0 accent-emerald-600" type="checkbox">
+          </label>
+
+          <label class="flex min-h-10 min-w-0 items-center justify-between gap-3 rounded-lg bg-rose-50 px-3 text-sm font-bold text-rose-800">
+            <span class="min-w-0 leading-4">Срочно</span>
+            <input v-model="form.isUrgent" class="h-5 w-5 shrink-0 accent-rose-600" type="checkbox">
+          </label>
+        </div>
       </div>
     </section>
 
@@ -315,16 +329,37 @@ const inputClass = 'focus-ring min-h-10 rounded-lg border border-slate-200 bg-wh
               <article
                 v-for="image in form.images"
                 :key="image"
-                class="overflow-hidden rounded-lg border border-slate-200 bg-white"
+                class="overflow-hidden rounded-lg border bg-white"
+                :class="image === mainImage ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-slate-200'"
               >
-                <img :src="image" alt="" class="aspect-[4/3] w-full object-cover">
-                <button
-                  class="w-full bg-slate-50 px-3 py-2 text-sm font-bold text-rose-700"
-                  type="button"
-                  @click="removeImage(image)"
-                >
-                  Удалить
-                </button>
+                <div class="relative">
+                  <img :src="image" alt="" class="aspect-[4/3] w-full object-cover">
+                  <span
+                    v-if="image === mainImage"
+                    class="absolute left-2 top-2 rounded-full bg-emerald-600 px-2 py-1 text-xs font-bold text-white"
+                  >
+                    Главное
+                  </span>
+                </div>
+
+                <div class="grid gap-1 bg-slate-50 p-2">
+                  <button
+                    class="min-h-9 rounded-lg bg-white px-2 text-xs font-bold text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+                    :disabled="image === mainImage"
+                    type="button"
+                    @click="makeMainImage(image)"
+                  >
+                    Сделать главным
+                  </button>
+
+                  <button
+                    class="min-h-9 rounded-lg bg-white px-2 text-xs font-bold text-rose-700"
+                    type="button"
+                    @click="removeImage(image)"
+                  >
+                    Удалить
+                  </button>
+                </div>
               </article>
             </div>
           </div>

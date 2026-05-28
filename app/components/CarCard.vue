@@ -21,8 +21,9 @@ const favorite = computed(() => isFavorite(props.car.id))
           class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           loading="lazy"
         >
-        <div class="absolute left-3 top-3">
+        <div class="absolute left-3 top-3 flex flex-wrap gap-2">
           <PriceBadge :label="car.priceBadge" />
+          <PriceBadge v-if="car.isUrgent" label="Срочно" />
         </div>
       </div>
     </NuxtLink>

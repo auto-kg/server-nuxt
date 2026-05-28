@@ -7,6 +7,8 @@ const { favoriteIds, loadFavorites } = useFavorites()
 const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/settings')
 
 const settings = computed(() => settingsResponse.value?.data)
+const logoImage = computed(() => settings.value?.logoImage?.trim() || '')
+const isLogoImageHidden = ref(false)
 
 const links = [
   { label: 'Избранное', to: '/favorites' }
@@ -19,6 +21,10 @@ watch(
   }
 )
 
+watch(logoImage, () => {
+  isLogoImageHidden.value = false
+})
+
 onMounted(loadFavorites)
 </script>
 
@@ -27,7 +33,14 @@ onMounted(loadFavorites)
     <div class="container-page">
       <div class="flex h-14 items-center justify-between gap-3">
         <NuxtLink to="/" class="focus-ring flex items-center gap-2 rounded-xl">
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-sm font-bold text-white">
+          <img
+            v-if="logoImage && !isLogoImageHidden"
+            :src="logoImage"
+            :alt="settings?.logoText ?? 'ЛЯМБАР'"
+            class="h-10 w-10 rounded-lg object-contain"
+            @error="isLogoImageHidden = true"
+          >
+          <span v-else class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-sm font-bold text-white">
             {{ settings?.logoInitial ?? 'A' }}
           </span>
           <span class="text-base font-bold tracking-tight text-slate-950">{{ settings?.logoText ?? 'AutoHub KG' }}</span>

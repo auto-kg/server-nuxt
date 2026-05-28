@@ -32,10 +32,12 @@ export interface Car {
   description: string
   seller: Seller
   isFeatured: boolean
+  isUrgent?: boolean
 }
 
 export interface CarSearchFilters {
   query: string
+  vehicleType: string
   brand: string
   model: string
   description: string
@@ -66,6 +68,7 @@ export interface AdminCarPayload {
   sellerPhone: string
   images: string[]
   isFeatured: boolean
+  isUrgent: boolean
 }
 
 export interface HomeCategory {
