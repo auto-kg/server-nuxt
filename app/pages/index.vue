@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { Car, CarSearchFilters, HomeCategory } from '~/types/car'
 import type { SiteSettings } from '~/types/settings'
+import { filterCarsLocally } from '~/utils/carFilters'
+import { getCarVehicleType, vehicleTypes } from '~/utils/vehicleType'
 
 const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
 const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/settings')
 const { data: categoriesResponse } = await useFetch<{ data: HomeCategory[] }>('/api/categories')
+const router = useRouter()
 const fallbackHeroImage = '/uploads/site-hero.png'
 const fallbackSettings: SiteSettings = {
   logoText: 'AutoHub KG',
@@ -18,10 +21,9 @@ const fallbackSettings: SiteSettings = {
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const categories = computed(() => categoriesResponse.value?.data ?? [])
 const settings = computed(() => settingsResponse.value?.data ?? fallbackSettings)
-const catalog = useCarCatalog(allCars)
 const heroImage = computed(() => settings.value.heroImage || fallbackHeroImage)
-
-const featuredCars = computed(() => allCars.value.filter((car) => car.isFeatured).slice(0, 6))
+const activeFilters = ref<CarSearchFilters>(createDefaultCarSearchFilters())
+const matchingCars = computed(() => filterCarsLocally(allCars.value, activeFilters.value))
 
 const popularBrands = computed(() => {
   const counts = allCars.value.reduce<Record<string, number>>((acc, car) => {
@@ -35,12 +37,54 @@ const popularBrands = computed(() => {
     .slice(0, 8)
 })
 
-const handleSearch = async (filters: CarSearchFilters) => {
-  await catalog.applyFilters(filters)
+const vehicleTypeCards = computed(() =>
+  vehicleTypes
+    .map((type) => ({
+      ...type,
+      count: allCars.value.filter((car) => getCarVehicleType(car) === type.value).length
+    }))
+    .filter((type) => type.count > 0)
+)
+
+const goToCatalog = (filters: CarSearchFilters) => {
+  router.push({
+    path: '/catalog',
+    query: carSearchFiltersToQuery(filters)
+  })
+}
+
+const handleFilterChange = (filters: CarSearchFilters) => {
+  activeFilters.value = { ...filters }
+}
+
+const handleSearch = (filters: CarSearchFilters) => {
+  activeFilters.value = { ...filters }
+  goToCatalog(filters)
 }
 
 const handleReset = () => {
-  catalog.resetFilters()
+  activeFilters.value = createDefaultCarSearchFilters()
+}
+
+const openBrand = (brand: string) => {
+  goToCatalog({
+    ...createDefaultCarSearchFilters(),
+    brand
+  })
+}
+
+const openVehicleType = (vehicleType: string) => {
+  goToCatalog({
+    ...createDefaultCarSearchFilters(),
+    vehicleType
+  })
+}
+
+const openCategory = (title: string) => {
+  goToCatalog({
+    ...createDefaultCarSearchFilters(),
+    query: title
+  })
 }
 
 const handleHeroImageError = (event: Event) => {
@@ -51,14 +95,6 @@ const handleHeroImageError = (event: Event) => {
   }
 
   image.src = fallbackHeroImage
-}
-
-const goToCatalogPage = (page: number) => {
-  catalog.setPage(page)
-
-  if (import.meta.client) {
-    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
 }
 
 const advantages = [
@@ -114,7 +150,9 @@ useHead({
           <div class="mx-auto">
             <SearchForm
               :cars="allCars"
-              :is-loading="catalog.isLoading.value"
+              :result-count="matchingCars.length"
+              submit-label="Показать в каталоге"
+              @change="handleFilterChange"
               @reset="handleReset"
               @search="handleSearch"
             />
@@ -132,6 +170,7 @@ useHead({
               :key="category.title"
               class="group w-[78%] shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-white sm:w-[46%] lg:w-[31%] xl:w-[23.5%]"
             >
+              <button class="block w-full text-left" type="button" @click="openCategory(category.title)">
               <div class="aspect-[4/3] overflow-hidden bg-slate-200">
                 <img :src="category.image" :alt="category.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
               </div>
@@ -139,6 +178,7 @@ useHead({
                 <h3 class="text-lg font-bold text-slate-950">{{ category.title }}</h3>
                 <p class="mt-1 text-sm font-semibold text-slate-500">Открыть подборку</p>
               </div>
+              </button>
             </article>
           </HorizontalScroller>
 
@@ -151,84 +191,27 @@ useHead({
       <section class="px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
         <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <SectionHeader
-            title="Лучшие предложения"
-            subtitle="Подборка автомобилей с сильной комплектацией, понятной историей и привлекательной оценкой цены."
+            title="Тип транспортных средств"
+            subtitle="Быстрый старт по кузову и назначению автомобиля."
             compact
           />
 
-          <HorizontalScroller v-if="featuredCars.length" class="mt-4">
-            <div
-              v-for="car in featuredCars"
-              :key="car.id"
-              class="w-[84%] shrink-0 snap-start sm:w-[48%] lg:w-[46%] xl:w-[31.5%]"
+          <div v-if="vehicleTypeCards.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+            <button
+              v-for="type in vehicleTypeCards"
+              :key="type.value"
+              class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
+              type="button"
+              @click="openVehicleType(type.value)"
             >
-              <CarCard :car="car" />
-            </div>
-          </HorizontalScroller>
+              <span class="block text-base font-bold text-slate-950">{{ type.label }}</span>
+              <span class="mt-1 block text-sm font-semibold text-slate-500">{{ type.count }} авто</span>
+            </button>
+          </div>
 
           <div v-else class="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500">
-            Лучшие предложения пока не выбраны
+            Типы появятся после добавления объявлений.
           </div>
-        </div>
-      </section>
-
-      <section id="catalog" class="scroll-mt-6 px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-        <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <SectionHeader
-            title="Каталог автомобилей"
-            :subtitle="catalog.totalCars.value ? `${catalog.totalCars.value} предложений, показаны ${catalog.pageStart.value + 1}-${catalog.pageEnd.value}` : 'Нет предложений по выбранным условиям'"
-            compact
-          />
-
-          <p v-if="catalog.errorMessage.value" class="mt-4 rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">
-            {{ catalog.errorMessage.value }}
-          </p>
-
-          <div v-if="catalog.paginatedCars.value.length" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            <CarCard v-for="car in catalog.paginatedCars.value" :key="car.id" :car="car" />
-          </div>
-
-          <div v-else class="mt-5 rounded-lg border border-slate-200 bg-white p-6 text-center">
-            <h3 class="text-xl font-bold text-slate-950">Ничего не найдено</h3>
-            <p class="mt-2 text-slate-600">Попробуйте изменить марку, цену или год выпуска.</p>
-          </div>
-
-          <nav
-            v-if="catalog.totalPages.value > 1"
-            class="mt-6 grid gap-3 border-t border-slate-100 pt-4 sm:flex sm:items-center sm:justify-between"
-            aria-label="Пагинация каталога"
-          >
-            <button
-              class="focus-ring min-h-11 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
-              :disabled="catalog.currentPage.value === 1"
-              type="button"
-              @click="goToCatalogPage(catalog.currentPage.value - 1)"
-            >
-              Назад
-            </button>
-
-            <div class="flex justify-center gap-2 overflow-x-auto">
-              <button
-                v-for="page in catalog.visiblePages.value"
-                :key="page"
-                class="focus-ring h-11 w-11 shrink-0 rounded-lg text-sm font-bold"
-                :class="page === catalog.currentPage.value ? 'bg-slate-950 text-white' : 'border border-slate-200 bg-white text-slate-950'"
-                type="button"
-                @click="goToCatalogPage(page)"
-              >
-                {{ page }}
-              </button>
-            </div>
-
-            <button
-              class="focus-ring min-h-11 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
-              :disabled="catalog.currentPage.value === catalog.totalPages.value"
-              type="button"
-              @click="goToCatalogPage(catalog.currentPage.value + 1)"
-            >
-              Далее
-            </button>
-          </nav>
         </div>
       </section>
 
@@ -243,6 +226,7 @@ useHead({
                 :key="item.brand"
                 class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
                 type="button"
+                @click="openBrand(item.brand)"
               >
                 <span class="block text-lg font-bold text-slate-950">{{ item.brand }}</span>
                 <span class="mt-1 block text-sm font-semibold text-slate-500">{{ item.count }} авто</span>

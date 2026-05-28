@@ -1,7 +1,9 @@
 import type { Car, CarSearchFilters } from '~/types/car'
+import { carMatchesVehicleType } from '~/utils/vehicleType'
 
 export const createDefaultCarSearchFilters = (): CarSearchFilters => ({
   query: '',
+  vehicleType: '',
   brand: '',
   model: '',
   description: '',
@@ -11,6 +13,24 @@ export const createDefaultCarSearchFilters = (): CarSearchFilters => ({
   fuel: '',
   city: ''
 })
+
+export const carSearchFiltersToQuery = (filters: CarSearchFilters) =>
+  Object.fromEntries(
+    Object.entries(filters)
+      .map(([key, value]) => [key, String(value).trim()])
+      .filter(([, value]) => value)
+  )
+
+export const carSearchFiltersFromQuery = (query: Record<string, unknown>): CarSearchFilters => {
+  const filters = createDefaultCarSearchFilters()
+
+  for (const key of Object.keys(filters) as Array<keyof CarSearchFilters>) {
+    const value = query[key]
+    filters[key] = Array.isArray(value) ? String(value[0] ?? '') : String(value ?? '')
+  }
+
+  return filters
+}
 
 export const useCarCatalog = (initialCars: Ref<Car[]>) => {
   const cars = ref<Car[]>([])
@@ -62,7 +82,7 @@ export const useCarCatalog = (initialCars: Ref<Car[]>) => {
         query: filters.value
       })
 
-      cars.value = response.data
+      cars.value = response.data.filter((car) => carMatchesVehicleType(car, filters.value.vehicleType))
     } catch (error) {
       errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить автомобили'
     } finally {

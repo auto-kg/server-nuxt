@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   return {
     data: await listCarsRepository({
       query: String(query.query ?? ''),
+      vehicleType: String(query.vehicleType ?? ''),
       brand: String(query.brand ?? ''),
       model: String(query.model ?? ''),
       description: String(query.description ?? ''),
