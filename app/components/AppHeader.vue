@@ -74,12 +74,18 @@ onMounted(loadFavorites)
 
         <div class="hidden items-center gap-2 md:flex">
           <span class="h-6 w-px bg-neutral-950/15" />
-          <BlackButton compact>
-            Связаться
-            <svg class="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
-            </svg>
-          </BlackButton>
+
+          <button
+            class="focus-ring flex h-6 w-6 shrink-0 items-center justify-center rounded-[3px] border-[2.5px] border-neutral-950 bg-white p-0 transition hover:opacity-80"
+            type="button"
+            title="RU"
+          >
+            <div class="flex h-full w-full flex-col">
+              <div class="h-1/3 w-full bg-white" />
+              <div class="h-1/3 w-full bg-blue-600" />
+              <div class="h-1/3 w-full bg-red-600" />
+            </div>
+          </button>
         </div>
 
         <button

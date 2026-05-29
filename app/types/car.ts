@@ -12,6 +12,16 @@ export interface Seller {
   responseTime: string
 }
 
+export interface VehicleType {
+  id: string
+  value: string
+  title: string
+  description: string
+  image: string
+  sortOrder: number
+  isActive: boolean
+}
+
 export interface Car {
   id: string
   brand: string
@@ -33,10 +43,15 @@ export interface Car {
   seller: Seller
   isFeatured: boolean
   isUrgent?: boolean
+  categoryId?: string
+  categoryTitle?: string
+  vehicleTypeId?: string
+  vehicleType?: VehicleType | null
 }
 
 export interface CarSearchFilters {
   query: string
+  categoryId: string
   vehicleType: string
   brand: string
   model: string
@@ -69,11 +84,14 @@ export interface AdminCarPayload {
   images: string[]
   isFeatured: boolean
   isUrgent: boolean
+  categoryId: string
+  vehicleTypeId: string
 }
 
 export interface HomeCategory {
   id: string
   title: string
+  description: string
   image: string
   sortOrder: number
   isActive: boolean
@@ -81,6 +99,16 @@ export interface HomeCategory {
 
 export interface AdminCategoryPayload {
   title: string
+  description: string
+  image: string
+  sortOrder: number
+  isActive: boolean
+}
+
+export interface AdminVehicleTypePayload {
+  value: string
+  title: string
+  description: string
   image: string
   sortOrder: number
   isActive: boolean

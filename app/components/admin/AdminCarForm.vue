@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AdminField from '~/components/admin/AdminField.vue'
-import type { AdminCarPayload, Car } from '~/types/car'
+import type { AdminCarPayload, Car, HomeCategory, VehicleType } from '~/types/car'
 
 interface Dictionaries {
   brands: string[]
@@ -10,6 +10,8 @@ interface Dictionaries {
   transmissions: string[]
   drivetrains: string[]
   colors: string[]
+  categories: HomeCategory[]
+  vehicleTypes: VehicleType[]
 }
 
 const props = defineProps<{
@@ -50,7 +52,9 @@ const createEmptyForm = (): AdminCarPayload => ({
   sellerPhone: '+996 ',
   images: [],
   isFeatured: false,
-  isUrgent: false
+  isUrgent: false,
+  categoryId: '',
+  vehicleTypeId: ''
 })
 
 const carToPayload = (car: Car): AdminCarPayload => ({
@@ -73,7 +77,9 @@ const carToPayload = (car: Car): AdminCarPayload => ({
   sellerPhone: car.seller.phone,
   images: [...car.images],
   isFeatured: car.isFeatured,
-  isUrgent: Boolean(car.isUrgent)
+  isUrgent: Boolean(car.isUrgent),
+  categoryId: car.categoryId ?? '',
+  vehicleTypeId: car.vehicleTypeId ?? ''
 })
 
 const form = reactive<AdminCarPayload>(createEmptyForm())
@@ -217,6 +223,24 @@ const inputClass = 'focus-ring min-h-10 w-full min-w-0 rounded-lg border border-
 
         <AdminField label="Пробег, км">
           <input v-model.number="form.mileage" :class="inputClass" inputmode="numeric" min="0" type="number">
+        </AdminField>
+
+        <AdminField label="Популярная категория" hint="Необязательно. Связь нужна для карточек на главной и быстрых подборок.">
+          <select v-model="form.categoryId" :class="inputClass">
+            <option value="">Без категории</option>
+            <option v-for="category in props.dictionaries.categories" :key="category.id" :value="category.id">
+              {{ category.title }}
+            </option>
+          </select>
+        </AdminField>
+
+        <AdminField label="Тип транспорта" hint="Необязательно. Если не выбрать, старые объявления продолжат определяться по тексту.">
+          <select v-model="form.vehicleTypeId" :class="inputClass">
+            <option value="">Без типа</option>
+            <option v-for="type in props.dictionaries.vehicleTypes" :key="type.id" :value="type.id">
+              {{ type.title }}
+            </option>
+          </select>
         </AdminField>
       </div>
     </section>

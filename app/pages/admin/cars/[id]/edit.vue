@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminCarForm from '~/components/admin/AdminCarForm.vue'
 import AdminShell from '~/components/admin/AdminShell.vue'
-import type { Car } from '~/types/car'
+import type { Car, HomeCategory, VehicleType } from '~/types/car'
 
 interface DictionariesResponse {
   data: {
@@ -12,6 +12,8 @@ interface DictionariesResponse {
     transmissions: string[]
     drivetrains: string[]
     colors: string[]
+    categories: HomeCategory[]
+    vehicleTypes: VehicleType[]
   }
 }
 
@@ -34,7 +36,9 @@ const defaultDictionaries = {
   fuels: ['Бензин', 'Дизель', 'Гибрид', 'Электро', 'Газ'],
   transmissions: ['Автомат', 'Механика', 'Робот', 'Вариатор'],
   drivetrains: ['Передний', 'Задний', 'Полный'],
-  colors: ['Белый', 'Черный', 'Серый', 'Серебристый', 'Синий', 'Красный', 'Зеленый', 'Коричневый']
+  colors: ['Белый', 'Черный', 'Серый', 'Серебристый', 'Синий', 'Красный', 'Зеленый', 'Коричневый'],
+  categories: [],
+  vehicleTypes: []
 }
 
 const loadData = async () => {
@@ -67,7 +71,9 @@ const dictionaries = computed(() => {
     fuels: unique([...(loaded?.fuels ?? []), ...defaultDictionaries.fuels]),
     transmissions: unique([...(loaded?.transmissions ?? []), ...defaultDictionaries.transmissions]),
     drivetrains: unique([...(loaded?.drivetrains ?? []), ...defaultDictionaries.drivetrains]),
-    colors: unique([...(loaded?.colors ?? []), ...defaultDictionaries.colors])
+    colors: unique([...(loaded?.colors ?? []), ...defaultDictionaries.colors]),
+    categories: loaded?.categories ?? defaultDictionaries.categories,
+    vehicleTypes: loaded?.vehicleTypes ?? defaultDictionaries.vehicleTypes
   }
 })
 

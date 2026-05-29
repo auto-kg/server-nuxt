@@ -129,10 +129,7 @@ useHead({
 </script>
 
 <template>
-  <div>
-    <AppHeader />
-
-    <main class="lux-page pb-24 pt-24 sm:pt-28 lg:pb-8">
+  <main class="lux-page pb-24 pt-24 sm:pt-28 lg:pb-8">
       <div class="content-page">
         <section v-if="showAdminNavigation" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
           <div class="grid grid-cols-2 gap-2">
@@ -223,7 +220,7 @@ useHead({
       >
         <div class="mx-auto flex max-w-lg items-center gap-3">
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-bold text-slate-950">{{ car.seller.name }}</p>
+            <p class="truncate text-sm font-bold text-slate-950">{{ car.title }}</p>
             <p class="text-sm font-bold text-slate-600">{{ formatPrice(car.price) }}</p>
           </div>
           <BlackButton
@@ -237,6 +234,5 @@ useHead({
           </BlackButton>
         </div>
       </div>
-    </Transition>
-  </div>
+  </Transition>
 </template>

@@ -7,6 +7,7 @@ const fallbackCategories: HomeCategory[] = [
   {
     id: 'family-suv',
     title: 'Семейные SUV',
+    description: 'Кроссоверы и SUV для семьи, поездок и ежедневных задач.',
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=82',
     sortOrder: 10,
     isActive: true
@@ -14,6 +15,7 @@ const fallbackCategories: HomeCategory[] = [
   {
     id: 'ev',
     title: 'Электромобили',
+    description: 'Электромобили и гибридные предложения для экономичной езды.',
     image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=900&q=82',
     sortOrder: 20,
     isActive: true
@@ -21,6 +23,7 @@ const fallbackCategories: HomeCategory[] = [
   {
     id: 'city-hatches',
     title: 'Городские хэтчбеки',
+    description: 'Компактные автомобили для города.',
     image: 'https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=900&q=82',
     sortOrder: 30,
     isActive: true
@@ -28,6 +31,7 @@ const fallbackCategories: HomeCategory[] = [
   {
     id: 'premium-sedans',
     title: 'Премиум седаны',
+    description: 'Комфортные седаны с богатыми комплектациями.',
     image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=82',
     sortOrder: 40,
     isActive: true
@@ -58,6 +62,7 @@ export const listHomeCategories = async ({ includeInactive = false } = {}) => {
     return rows.map((row) => ({
       id: row.id,
       title: row.title,
+      description: row.description,
       image: row.image,
       sortOrder: row.sortOrder,
       isActive: row.isActive
@@ -78,6 +83,7 @@ export const listHomeCategories = async ({ includeInactive = false } = {}) => {
 export const createHomeCategory = async (payload: AdminCategoryPayload) => {
   const category = {
     title: payload.title.trim(),
+    description: payload.description?.trim() ?? '',
     image: payload.image.trim(),
     sortOrder: payload.sortOrder,
     isActive: payload.isActive

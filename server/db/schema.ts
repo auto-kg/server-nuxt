@@ -44,12 +44,35 @@ export const sellers = pgTable('sellers', {
   ...timestamps
 })
 
+export const vehicleTypes = pgTable('vehicle_types', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  value: text('value').notNull().unique(),
+  title: text('title').notNull(),
+  description: text('description').default('').notNull(),
+  image: text('image').default('').notNull(),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  ...timestamps
+})
+
+export const homeCategories = pgTable('home_categories', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').default('').notNull(),
+  image: text('image').notNull(),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  ...timestamps
+})
+
 export const cars = pgTable('cars', {
   id: text('id').primaryKey(),
   brandId: uuid('brand_id').references(() => brands.id).notNull(),
   modelId: uuid('model_id').references(() => models.id).notNull(),
   cityId: uuid('city_id').references(() => cities.id).notNull(),
   sellerId: uuid('seller_id').references(() => sellers.id).notNull(),
+  categoryId: uuid('category_id').references(() => homeCategories.id, { onDelete: 'set null' }),
+  vehicleTypeId: uuid('vehicle_type_id').references(() => vehicleTypes.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
   price: integer('price').notNull(),
   year: integer('year').notNull(),
@@ -80,15 +103,6 @@ export const siteSettings = pgTable('site_settings', {
   key: text('key').primaryKey(),
   value: jsonb('value').notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull()
-})
-
-export const homeCategories = pgTable('home_categories', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
-  image: text('image').notNull(),
-  sortOrder: integer('sort_order').default(0).notNull(),
-  isActive: boolean('is_active').default(true).notNull(),
-  ...timestamps
 })
 
 export const adminUsers = pgTable('admin_users', {

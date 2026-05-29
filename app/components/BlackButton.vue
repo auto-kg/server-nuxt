@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
 })
 
 const classes = computed(() => [
-  'focus-ring inline-flex items-center justify-center gap-2 rounded-none bg-neutral-950 text-center text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60',
+  'focus-ring inline-flex items-center justify-center gap-2 rounded-[3px] bg-neutral-950 text-center text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60',
   props.compact ? 'min-h-10 px-3' : 'min-h-11 px-5'
 ])
 </script>

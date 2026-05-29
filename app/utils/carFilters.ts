@@ -14,6 +14,7 @@ export const filterCarsLocally = (cars: Car[], filters: CarSearchFilters) => {
 
     return (
       (!search || searchValues.includes(search)) &&
+      (!filters.categoryId || car.categoryId === filters.categoryId) &&
       carMatchesVehicleType(car, filters.vehicleType) &&
       (!filters.brand || car.brand === filters.brand) &&
       (!filters.model || car.model.toLowerCase().includes(filters.model.toLowerCase())) &&

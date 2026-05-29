@@ -96,7 +96,13 @@ const reset = () => {
   <form class="lux-glass overflow-hidden rounded-lg" @submit.prevent="submit">
     <div class="flex items-center justify-between gap-3 border-b border-white/35 bg-white/20 px-3 py-3 sm:px-4">
       <div class="flex min-w-0 items-center gap-3">
-        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-950/10 bg-neutral-950 text-[10px] font-semibold tracking-[0.18em] text-white">AUTO</span>
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-950/10 bg-neutral-950">
+          <img
+            src="https://img.icons8.com/?size=100&id=132&format=png&color=FFFFFF"
+            alt="Описание картинки"
+            class="h-full w-full object-contain p-1"
+          />
+        </span>
         <div class="min-w-0">
           <p class="truncate text-sm font-semibold uppercase tracking-[0.18em] text-neutral-950">Поиск и фильтры</p>
           <p class="text-xs font-medium text-neutral-500">
@@ -120,7 +126,7 @@ const reset = () => {
         Поиск авто
         <input
           v-model.trim="filters.query"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Camry, Бишкек, дилер, кожа"
           type="search"
         >
@@ -128,7 +134,7 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
         Тип транспорта
-        <select v-model="filters.vehicleType" class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+        <select v-model="filters.vehicleType" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
           <option value="">Любой</option>
           <option v-for="type in availableVehicleTypes" :key="type.value" :value="type.value">{{ type.title }}</option>
         </select>
@@ -136,7 +142,7 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
         Марка
-        <select v-model="filters.brand" class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+        <select v-model="filters.brand" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
           <option value="">Любая</option>
           <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
         </select>
@@ -146,7 +152,7 @@ const reset = () => {
         Модель
         <input
           v-model.trim="filters.model"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Например, Golf"
           type="text"
         >
@@ -156,7 +162,7 @@ const reset = () => {
         По описанию
         <input
           v-model.trim="filters.description"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Без ДТП, кожа, 4WD"
           type="text"
         >
@@ -166,7 +172,7 @@ const reset = () => {
         Цена до
         <input
           v-model="filters.maxPrice"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="0"
           placeholder="30000"
@@ -178,7 +184,7 @@ const reset = () => {
         Год от
         <input
           v-model="filters.yearFrom"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="1990"
           placeholder="2020"
@@ -190,7 +196,7 @@ const reset = () => {
         Пробег до
         <input
           v-model="filters.maxMileage"
-          class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
+          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="0"
           placeholder="80000"
@@ -200,7 +206,7 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
         Тип топлива
-        <select v-model="filters.fuel" class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+        <select v-model="filters.fuel" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
           <option value="">Любой</option>
           <option v-for="fuel in fuels" :key="fuel" :value="fuel">{{ fuel }}</option>
         </select>
@@ -208,14 +214,14 @@ const reset = () => {
 
       <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
         Город
-        <select v-model="filters.city" class="focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+        <select v-model="filters.city" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
           <option value="">Любой</option>
           <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
         </select>
       </label>
 
       <BlackButton
-        class="mt-auto lg:col-span-1"
+        class="w-full mt-auto lg:col-span-1"
         :disabled="props.isLoading"
         type="submit"
       >
@@ -223,7 +229,7 @@ const reset = () => {
       </BlackButton>
 
       <button
-        class="focus-ring mt-auto min-h-11 rounded-none border border-neutral-950/15 bg-white/25 px-4 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-950 backdrop-blur transition hover:bg-white/45 disabled:cursor-not-allowed disabled:opacity-50"
+        class="w-full focus-ring mt-auto min-h-11 rounded-none border border-neutral-950/15 bg-white/25 px-4 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-950 backdrop-blur transition hover:bg-white/45 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="props.isLoading || !hasActiveFilters"
         type="button"
         @click="reset"
