@@ -29,8 +29,8 @@ useHead({
   <div>
     <AppHeader />
 
-    <main class="bg-slate-50 py-6 sm:py-10">
-      <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
+    <main class="lux-page min-h-screen py-24 sm:py-28">
+      <div class="content-page">
         <section>
           <SectionHeader title="Избранное" subtitle="Автомобили, которые вы отметили для сравнения." />
 
@@ -43,12 +43,12 @@ useHead({
             <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">
               Добавляйте автомобили в избранное из каталога или карточки.
             </p>
-            <NuxtLink
+            <BlackButton
               to="/"
-              class="focus-ring mt-4 inline-flex min-h-10 items-center rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white"
+              class="mt-4"
             >
               Перейти в каталог
-            </NuxtLink>
+            </BlackButton>
           </div>
         </section>
 

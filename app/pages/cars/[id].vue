@@ -132,24 +132,22 @@ useHead({
   <div>
     <AppHeader />
 
-    <main class="bg-slate-50 pb-24 pt-5 sm:pt-8 lg:pb-8">
-      <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
+    <main class="lux-page pb-24 pt-24 sm:pt-28 lg:pb-8">
+      <div class="content-page">
         <section v-if="showAdminNavigation" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
           <div class="grid grid-cols-2 gap-2">
-            <button
-              class="focus-ring min-h-11 rounded-lg bg-slate-950 px-3 text-sm font-bold text-white"
+            <BlackButton
               type="button"
               @click="goBackToAdmin"
             >
               В админку
-            </button>
+            </BlackButton>
 
-            <NuxtLink
+            <BlackButton
               :to="`/admin/cars/${car.id}/edit`"
-              class="focus-ring inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-600 px-3 text-sm font-bold text-white"
             >
               Редактировать
-            </NuxtLink>
+            </BlackButton>
           </div>
         </section>
 
@@ -228,14 +226,15 @@ useHead({
             <p class="truncate text-sm font-bold text-slate-950">{{ car.seller.name }}</p>
             <p class="text-sm font-bold text-slate-600">{{ formatPrice(car.price) }}</p>
           </div>
-          <a
-            class="focus-ring inline-flex min-h-11 shrink-0 items-center rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white shadow-sm shadow-emerald-600/20"
+          <BlackButton
+            class="shrink-0"
+            compact
             :href="whatsappUrl"
             rel="noopener noreferrer"
             target="_blank"
           >
             Связаться
-          </a>
+          </BlackButton>
         </div>
       </div>
     </Transition>

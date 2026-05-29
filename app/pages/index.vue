@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { Car, CarSearchFilters, HomeCategory } from '~/types/car'
+import type { Car, CarSearchFilters, HomeCategory, VehicleType } from '~/types/car'
 import type { SiteSettings } from '~/types/settings'
 import { filterCarsLocally } from '~/utils/carFilters'
-import { getCarVehicleType, vehicleTypes } from '~/utils/vehicleType'
+import { getCarVehicleType } from '~/utils/vehicleType'
 
 const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
 const { data: settingsResponse } = await useFetch<{ data: SiteSettings }>('/api/settings')
 const { data: categoriesResponse } = await useFetch<{ data: HomeCategory[] }>('/api/categories')
+const { data: vehicleTypesResponse } = await useFetch<{ data: VehicleType[] }>('/api/vehicle-types')
 const router = useRouter()
 const fallbackHeroImage = '/uploads/site-hero.png'
 const fallbackSettings: SiteSettings = {
@@ -24,6 +25,7 @@ const fallbackSettings: SiteSettings = {
 }
 const allCars = computed(() => carsResponse.value?.data ?? [])
 const categories = computed(() => categoriesResponse.value?.data ?? [])
+const vehicleTypes = computed(() => vehicleTypesResponse.value?.data ?? [])
 const settings = computed(() => settingsResponse.value?.data ?? fallbackSettings)
 const heroImage = computed(() => settings.value.heroImage || fallbackHeroImage)
 const socialLinks = computed(() => [
@@ -59,7 +61,7 @@ const popularBrands = computed(() => {
 })
 
 const vehicleTypeCards = computed(() =>
-  vehicleTypes
+  vehicleTypes.value
     .map((type) => ({
       ...type,
       count: allCars.value.filter((car) => getCarVehicleType(car) === type.value).length
@@ -101,10 +103,10 @@ const openVehicleType = (vehicleType: string) => {
   })
 }
 
-const openCategory = (title: string) => {
+const openCategory = (category: HomeCategory) => {
   goToCatalog({
     ...createDefaultCarSearchFilters(),
-    query: title
+    categoryId: category.id
   })
 }
 
@@ -142,157 +144,190 @@ useHead({
   <div>
     <AppHeader />
 
-    <main class="bg-slate-50">
-      <section class="relative bg-white pb-6 lg:pb-8">
-        <div class="relative min-h-[430px] overflow-hidden bg-slate-900 shadow-soft sm:min-h-[520px] lg:min-h-[560px]">
-            <img
-              :src="heroImage"
-              alt="Автомобиль на дороге"
-              class="absolute inset-0 h-full w-full object-cover object-center"
-              @error="handleHeroImageError"
-            >
-            <div class="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/10 to-slate-950/55" />
-            <div class="relative flex min-h-[430px] items-end px-5 pb-24 sm:min-h-[520px] sm:px-10 sm:pb-28 lg:min-h-[560px] lg:px-20">
-              <div class="max-w-3xl text-white">
-                <p class="mb-3 inline-flex rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-950">
-                  {{ settings?.heroBadge }}
-                </p>
-                <h1 class="text-3xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                  {{ settings?.heroTitle }}
-                </h1>
-                <p class="mt-3 max-w-2xl text-sm font-semibold leading-6 text-white/90 sm:text-lg sm:leading-7">
-                  {{ settings?.heroSubtitle }}
-                </p>
+    <main class="lux-page">
+      <section class="relative overflow-hidden">
+        <div class="relative min-h-[650px] overflow-hidden">
+          <img
+            :src="heroImage"
+            alt="Автомобиль на дороге"
+            class="absolute inset-0 h-full w-full object-cover object-center"
+            @error="handleHeroImageError"
+          >
+          <div class="absolute inset-0 bg-gradient-to-r from-[#f4f4f1]/55 via-[#f4f4f1]/24 to-transparent" />
+          <div class="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-[#e5e5e2]/35" />
+
+          <div class="content-page relative grid min-h-[650px] items-center pb-28 pt-24 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <div class="max-w-xl">
+              <p class="mb-6 text-[11px] font-semibold uppercase tracking-[0.55em] text-neutral-700">
+                {{ settings?.heroBadge }}
+              </p>
+              <h1 class="max-w-lg text-5xl font-light leading-[0.92] tracking-normal text-neutral-950 sm:text-7xl lg:text-8xl">
+                {{ settings?.heroTitle }}
+              </h1>
+              <p class="mt-7 max-w-md text-sm leading-7 text-neutral-600 sm:text-base">
+                {{ settings?.heroSubtitle }}
+              </p>
+
+              <div class="mt-8 flex flex-wrap items-center gap-4">
+                <BlackButton to="/catalog">
+                  Смотреть каталог
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
+                  </svg>
+                </BlackButton>
+                <button class="focus-ring inline-flex min-h-11 items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-800" type="button">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-950/20 bg-white/35 backdrop-blur">
+                    <svg class="h-4 w-4 translate-x-px" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m9 7 8 5-8 5V7Z" fill="currentColor" />
+                    </svg>
+                  </span>
+                  Обзор
+                </button>
               </div>
             </div>
+
+            <div class="hidden self-end justify-self-end pb-16 text-right lg:block">
+              <div class="grid gap-6 border-l border-neutral-950/15 pl-7">
+                <span class="text-xs font-semibold text-neutral-600">01</span>
+                <span class="h-20 w-px bg-neutral-950/25" />
+                <span class="text-xs font-semibold text-neutral-600">03</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="relative -mt-12 px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-          <div class="mx-auto">
-            <SearchForm
-              :cars="allCars"
-              :result-count="matchingCars.length"
-              submit-label="Показать в каталоге"
-              @change="handleFilterChange"
-              @reset="handleReset"
-              @search="handleSearch"
-            />
-          </div>
+        <div class="content-page relative -mt-20">
+          <SearchForm
+            :cars="allCars"
+            :result-count="matchingCars.length"
+            :vehicle-types="vehicleTypes"
+            submit-label="Показать"
+            @change="handleFilterChange"
+            @reset="handleReset"
+            @search="handleSearch"
+          />
         </div>
       </section>
 
-      <section class="px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-        <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section class="content-page py-6 sm:py-8">
+        <div class="lux-glass rounded-lg p-4 sm:p-5">
           <SectionHeader title="Популярные категории" subtitle="Быстрые подборки для разных сценариев покупки." compact />
 
           <HorizontalScroller v-if="categories.length" class="mt-4">
             <article
               v-for="category in categories"
               :key="category.title"
-              class="group w-[78%] shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-white sm:w-[46%] lg:w-[31%] xl:w-[23.5%]"
+              class="group w-[78%] shrink-0 snap-start overflow-hidden rounded-lg border border-white/35 bg-white/30 backdrop-blur sm:w-[46%] lg:w-[31%] xl:w-[23.5%]"
             >
-              <button class="block w-full text-left" type="button" @click="openCategory(category.title)">
-              <div class="aspect-[4/3] overflow-hidden bg-slate-200">
-                <img :src="category.image" :alt="category.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
-              </div>
-              <div class="p-4">
-                <h3 class="text-lg font-bold text-slate-950">{{ category.title }}</h3>
-                <p class="mt-1 text-sm font-semibold text-slate-500">Открыть подборку</p>
-              </div>
+              <button class="block h-full w-full text-left" type="button" @click="openCategory(category)">
+                <div class="aspect-[4/3] overflow-hidden bg-neutral-200">
+                  <img :src="category.image" :alt="category.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+                </div>
+                <div class="p-4">
+                  <h3 class="text-lg font-semibold text-neutral-950">{{ category.title }}</h3>
+                  <p class="mt-1 line-clamp-2 text-sm font-medium leading-6 text-neutral-500">
+                    {{ category.description || 'Открыть подборку' }}
+                  </p>
+                </div>
               </button>
             </article>
           </HorizontalScroller>
 
-          <div v-else class="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500">
+          <div v-else class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
             Категории пока не добавлены
           </div>
         </div>
       </section>
 
-      <section class="px-4 py-4 sm:px-6 sm:py-5 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-        <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section class="content-page py-4 sm:py-5">
+        <div class="lux-glass rounded-lg p-4 sm:p-5">
           <SectionHeader
             title="Тип транспортных средств"
             subtitle="Быстрый старт по кузову и назначению автомобиля."
             compact
           />
 
-          <div v-if="vehicleTypeCards.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+          <div v-if="vehicleTypeCards.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
             <button
               v-for="type in vehicleTypeCards"
               :key="type.value"
-              class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
+              class="focus-ring overflow-hidden rounded-lg border border-white/35 bg-white/30 text-left backdrop-blur transition hover:border-white/70 hover:bg-white/45"
               type="button"
               @click="openVehicleType(type.value)"
             >
-              <span class="block text-base font-bold text-slate-950">{{ type.label }}</span>
-              <span class="mt-1 block text-sm font-semibold text-slate-500">{{ type.count }} авто</span>
+              <span class="flex aspect-[16/9] items-center justify-center bg-white/25">
+                <img v-if="type.image" :src="type.image" :alt="type.title" class="h-full w-full object-contain">
+                <span v-else class="text-sm font-semibold text-neutral-500">{{ type.title }}</span>
+              </span>
+              <span class="block p-3">
+                <span class="block text-base font-semibold text-neutral-950">{{ type.title }}</span>
+                <span v-if="type.description" class="mt-1 line-clamp-2 block text-sm font-medium leading-6 text-neutral-500">{{ type.description }}</span>
+                <span class="mt-1 block text-sm font-medium text-neutral-500">{{ type.count }} авто</span>
+              </span>
             </button>
           </div>
 
-          <div v-else class="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500">
+          <div v-else class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
             Типы появятся после добавления объявлений.
           </div>
         </div>
       </section>
 
-      <section class="py-4 sm:py-5">
-        <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
-          <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <SectionHeader title="Популярные марки" subtitle="Быстрый вход в самые востребованные объявления каталога." compact />
+      <section class="content-page py-4 sm:py-5">
+        <div class="lux-glass rounded-lg p-4 sm:p-5">
+          <SectionHeader title="Популярные марки" subtitle="Быстрый вход в самые востребованные объявления каталога." compact />
 
-            <div v-if="popularBrands.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
-              <button
-                v-for="item in popularBrands"
-                :key="item.brand"
-                class="focus-ring min-h-20 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50"
-                type="button"
-                @click="openBrand(item.brand)"
-              >
-                <span class="block text-lg font-bold text-slate-950">{{ item.brand }}</span>
-                <span class="mt-1 block text-sm font-semibold text-slate-500">{{ item.count }} авто</span>
-              </button>
-            </div>
-            <div v-else class="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500">
-              Марки появятся после добавления авто
-            </div>
+          <div v-if="popularBrands.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
+            <button
+              v-for="item in popularBrands"
+              :key="item.brand"
+              class="focus-ring min-h-20 rounded-lg border border-white/35 bg-white/30 p-3 text-left backdrop-blur transition hover:border-white/70 hover:bg-white/45"
+              type="button"
+              @click="openBrand(item.brand)"
+            >
+              <span class="block text-lg font-semibold text-neutral-950">{{ item.brand }}</span>
+              <span class="mt-1 block text-sm font-medium text-neutral-500">{{ item.count }} авто</span>
+            </button>
+          </div>
+          <div v-else class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
+            Марки появятся после добавления авто
           </div>
         </div>
       </section>
 
-      <section class="container-page py-6 pb-10 sm:py-8 sm:pb-12">
+      <section class="content-page py-6 pb-10 sm:py-8 sm:pb-12">
         <SectionHeader title="Почему выбирают нас" subtitle="Фокус на понятном выборе и быстром сравнении объявлений." />
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
           <article
             v-for="advantage in advantages"
             :key="advantage.title"
-            class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+            class="rounded-lg border border-white/35 bg-white/35 p-4 shadow-[0_18px_60px_rgba(17,19,21,0.08)] backdrop-blur-xl"
           >
-            <h3 class="text-lg font-bold text-slate-950">{{ advantage.title }}</h3>
-            <p class="mt-3 leading-7 text-slate-600">{{ advantage.text }}</p>
+            <h3 class="text-lg font-semibold text-neutral-950">{{ advantage.title }}</h3>
+            <p class="mt-3 leading-7 text-neutral-600">{{ advantage.text }}</p>
           </article>
         </div>
       </section>
     </main>
 
-    <footer class="w-full border-t border-slate-200 bg-white">
-      <div class="container-page py-6 sm:py-8">
+    <footer class="w-full border-t border-white/35 bg-white/35 backdrop-blur-xl">
+      <div class="content-page py-6 sm:py-8">
         <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <p class="text-lg font-bold text-slate-950">{{ settings?.logoText }}</p>
-            <p class="mt-2 max-w-xl text-sm leading-6 text-slate-600">
+            <p class="text-lg font-semibold uppercase tracking-[0.32em] text-neutral-950">{{ settings?.logoText }}</p>
+            <p class="mt-2 max-w-xl text-sm leading-6 text-neutral-600">
               {{ settings?.footerDescription }}
             </p>
           </div>
-          <nav class="flex flex-wrap items-center gap-3 text-sm font-bold text-slate-600">
-            <NuxtLink class="focus-ring rounded-lg hover:text-slate-950" to="/favorites">Избранное</NuxtLink>
+          <nav class="flex flex-wrap items-center gap-3 text-sm font-semibold text-neutral-600">
+            <NuxtLink class="focus-ring rounded-md hover:text-neutral-950" to="/favorites">Избранное</NuxtLink>
             <a
               v-for="link in socialLinks"
               :key="link.label"
               :href="link.url"
               :aria-label="link.label"
-              class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+              class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-950/10 bg-white/25 text-neutral-700 backdrop-blur transition hover:border-neutral-950/25 hover:bg-white/45 hover:text-neutral-950"
               rel="noopener noreferrer"
               target="_blank"
             >

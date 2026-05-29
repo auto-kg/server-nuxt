@@ -12,9 +12,9 @@ const favorite = computed(() => isFavorite(props.car.id))
 </script>
 
 <template>
-  <article class="group relative overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-soft">
+  <article class="group relative overflow-hidden rounded-lg border border-white/35 bg-white/35 shadow-[0_18px_60px_rgba(17,19,21,0.1)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/45">
     <NuxtLink :to="`/cars/${car.id}`" class="block">
-      <div class="relative aspect-[4/3] overflow-hidden bg-slate-200">
+      <div class="relative aspect-[4/3] overflow-hidden bg-neutral-200">
         <img
           :src="car.images[0]"
           :alt="car.title"
@@ -29,8 +29,8 @@ const favorite = computed(() => isFavorite(props.car.id))
     </NuxtLink>
 
     <button
-      class="focus-ring absolute right-3 top-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm shadow-slate-950/10 backdrop-blur transition"
-      :class="favorite ? 'border-rose-200 bg-rose-50/95 text-rose-600' : 'border-white/70 bg-white/90 text-slate-700 hover:bg-white hover:text-rose-500'"
+      class="focus-ring absolute right-3 top-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm shadow-neutral-950/10 backdrop-blur transition"
+      :class="favorite ? 'border-rose-200 bg-rose-50/95 text-rose-600' : 'border-white/70 bg-white/70 text-neutral-700 hover:bg-white hover:text-rose-500'"
       type="button"
       :aria-label="favorite ? 'Удалить из избранного' : 'Добавить в избранное'"
       @click="toggleFavorite(car.id)"
@@ -55,32 +55,32 @@ const favorite = computed(() => isFavorite(props.car.id))
     <div class="space-y-3 p-3">
       <div>
         <div class="min-w-0">
-          <NuxtLink :to="`/cars/${car.id}`" class="focus-ring rounded-lg">
-            <h3 class="line-clamp-2 text-base font-bold leading-tight text-slate-950">
+          <NuxtLink :to="`/cars/${car.id}`" class="focus-ring rounded-md">
+            <h3 class="line-clamp-2 text-base font-semibold leading-tight text-neutral-950">
               {{ car.title }}
             </h3>
           </NuxtLink>
-          <p class="mt-2 text-xl font-bold tracking-tight text-slate-950">
+          <p class="mt-2 text-xl font-semibold tracking-tight text-neutral-950">
             {{ formatPrice(car.price) }}
           </p>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 text-sm text-slate-600">
-        <span class="rounded-lg bg-slate-50 px-2.5 py-1.5">{{ car.year }}</span>
-        <span class="rounded-lg bg-slate-50 px-2.5 py-1.5">{{ formatMileage(car.mileage) }}</span>
-        <span class="rounded-lg bg-slate-50 px-2.5 py-1.5">{{ car.fuel }}</span>
-        <span class="rounded-lg bg-slate-50 px-2.5 py-1.5">{{ car.transmission }}</span>
+      <div class="grid grid-cols-2 gap-2 text-sm text-neutral-600">
+        <span class="rounded-md border border-white/35 bg-white/30 px-2.5 py-1.5 backdrop-blur">{{ car.year }}</span>
+        <span class="rounded-md border border-white/35 bg-white/30 px-2.5 py-1.5 backdrop-blur">{{ formatMileage(car.mileage) }}</span>
+        <span class="rounded-md border border-white/35 bg-white/30 px-2.5 py-1.5 backdrop-blur">{{ car.fuel }}</span>
+        <span class="rounded-md border border-white/35 bg-white/30 px-2.5 py-1.5 backdrop-blur">{{ car.transmission }}</span>
       </div>
 
-      <div class="flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
-        <span class="text-sm font-semibold text-slate-600">{{ car.city }}</span>
-        <NuxtLink
+      <div class="flex items-center justify-between gap-3 border-t border-white/35 pt-3">
+        <span class="text-sm font-medium text-neutral-600">{{ car.city }}</span>
+        <BlackButton
           :to="`/cars/${car.id}`"
-          class="focus-ring rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-emerald-700"
+          compact
         >
           Подробнее
-        </NuxtLink>
+        </BlackButton>
       </div>
     </div>
   </article>
