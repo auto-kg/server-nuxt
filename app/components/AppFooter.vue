@@ -46,14 +46,14 @@ const socialLinks = computed(() => [
             {{ settings.footerDescription }}
           </p>
         </div>
-        <nav class="flex flex-wrap items-center gap-3 text-sm font-semibold text-neutral-600">
-          <NuxtLink class="focus-ring rounded-md hover:text-neutral-950" to="/favorites">Избранное</NuxtLink>
+        <nav class="flex items-center gap-3 text-sm font-semibold text-neutral-600">
+<!--          <NuxtLink class="focus-ring rounded-md hover:text-neutral-950" to="/favorites">Избранное</NuxtLink>-->
           <a
             v-for="link in socialLinks"
             :key="link.label"
             :href="link.url"
             :aria-label="link.label"
-            class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-950/10 bg-white/25 text-neutral-700 backdrop-blur transition hover:border-neutral-950/25 hover:bg-white/45 hover:text-neutral-950"
+            class="focus-ring inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-neutral-950/10 bg-white/25 text-neutral-700 backdrop-blur transition hover:border-neutral-950/25 hover:bg-white/45 hover:text-neutral-950"
             rel="noopener noreferrer"
             target="_blank"
           >

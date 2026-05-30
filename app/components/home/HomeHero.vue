@@ -38,7 +38,8 @@ const handleHeroImageError = (event: Event) => {
         class="absolute inset-0 h-full w-full object-cover object-center"
         @error="handleHeroImageError"
       >
-      <div class="absolute inset-0 bg-gradient-to-r from-[#f4f4f1]/55 via-[#f4f4f1]/24 to-transparent" />
+<!--      <div class="absolute inset-0 bg-gradient-to-r from-[#f4f4f1]/55 via-[#f4f4f1]/24 to-transparent" />-->
+      <div class="absolute inset-y-0 left-0 w-[30%] bg-gradient-to-r from-[#f4f4f1]/70 via-[#f4f4f1]/40 to-transparent" />
       <div class="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-[#e5e5e2]/35" />
 
       <div class="content-page relative grid min-h-[640px] items-center pb-28 pt-24 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">

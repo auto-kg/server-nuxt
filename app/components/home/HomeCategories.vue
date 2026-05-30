@@ -19,17 +19,14 @@ const emit = defineEmits<{
         <article
           v-for="category in props.categories"
           :key="category.title"
-          class="group w-[78%] shrink-0 snap-start overflow-hidden rounded-lg border border-white/35 bg-white/30 backdrop-blur sm:w-[46%] lg:w-[31%] xl:w-[23.5%]"
+          class="group w-36 shrink-0 snap-start overflow-hidden rounded-xl border border-white/35 bg-white/30 backdrop-blur sm:w-40"
         >
           <button class="block h-full w-full text-left" type="button" @click="emit('open', category)">
-            <div class="aspect-[4/3] overflow-hidden bg-neutral-200">
+            <div class="aspect-square overflow-hidden bg-neutral-200">
               <img :src="category.image" :alt="category.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
             </div>
-            <div class="p-4">
-              <h3 class="text-lg font-semibold text-neutral-950">{{ category.title }}</h3>
-              <p class="mt-1 line-clamp-2 text-sm font-medium leading-6 text-neutral-500">
-                {{ category.description || 'Открыть подборку' }}
-              </p>
+            <div class="px-3 py-2">
+              <h3 class="text-sm font-semibold leading-tight text-neutral-950">{{ category.title }}</h3>
             </div>
           </button>
         </article>
