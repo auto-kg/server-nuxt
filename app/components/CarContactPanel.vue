@@ -32,27 +32,25 @@ defineProps<{
     <SellerPanel v-else :seller="seller" :city="city" />
 
     <div v-if="compact" class="mt-4 grid gap-3 border-t border-slate-100 pt-4">
-      <a
+      <BlackButton
         v-if="contactUrl"
-        class="focus-ring inline-flex min-h-10 items-center justify-center rounded-lg bg-emerald-600 px-5 text-center text-sm font-bold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700"
         :href="contactUrl"
         rel="noopener noreferrer"
         target="_blank"
       >
         Связаться с продавцом
-      </a>
+      </BlackButton>
     </div>
 
     <div v-else class="mt-5 grid gap-3 border-t border-slate-100 pt-5">
-      <a
+      <BlackButton
         v-if="contactUrl"
-        class="focus-ring inline-flex min-h-10 items-center justify-center rounded-lg bg-emerald-600 px-5 text-center text-sm font-bold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700"
         :href="contactUrl"
         rel="noopener noreferrer"
         target="_blank"
       >
         Связаться с продавцом
-      </a>
+      </BlackButton>
     </div>
   </aside>
 </template>

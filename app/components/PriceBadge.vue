@@ -7,24 +7,24 @@ const props = defineProps<{
 
 const badgeClass = computed(() => {
   if (props.label === 'Top deal') {
-    return 'bg-emerald-100 text-emerald-800'
+    return 'border-white/45 bg-white/75 text-neutral-950'
   }
 
   if (props.label === 'Хорошая цена') {
-    return 'bg-sky-100 text-sky-800'
+    return 'border-white/45 bg-neutral-100/80 text-neutral-800'
   }
 
   if (props.label === 'Срочно') {
-    return 'bg-rose-100 text-rose-800'
+    return 'border-rose-200/60 bg-rose-50/85 text-rose-700'
   }
 
-  return 'bg-amber-100 text-amber-800'
+  return 'border-white/45 bg-stone-100/85 text-stone-800'
 })
 </script>
 
 <template>
   <span
-    class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+    class="inline-flex items-center rounded-sm border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] shadow-sm backdrop-blur"
     :class="badgeClass"
   >
     {{ label }}

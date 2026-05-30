@@ -66,7 +66,7 @@ useHead({
             to="/admin/categories"
             class="focus-ring flex min-h-11 items-center justify-between rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950"
           >
-            <span>Популярные категории</span>
+            <span>Категории и типы</span>
             <span aria-hidden="true">›</span>
           </NuxtLink>
         </div>

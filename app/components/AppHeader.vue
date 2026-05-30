@@ -29,45 +29,67 @@ onMounted(loadFavorites)
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
-    <div class="container-page">
+  <header class="fixed inset-x-0 top-0 z-40">
+    <div class="w-full border-b border-white/45 bg-white/35 px-4 shadow-[0_18px_60px_rgba(20,22,24,0.1)] backdrop-blur-xl sm:px-6 lg:px-8">
       <div class="flex h-14 items-center justify-between gap-3">
-        <NuxtLink to="/" class="focus-ring flex items-center gap-2 rounded-xl">
+        <NuxtLink to="/" class="focus-ring flex min-w-0 items-center gap-3 rounded-md">
           <img
             v-if="logoImage && !isLogoImageHidden"
             :src="logoImage"
             :alt="settings?.logoText ?? 'ЛЯМБАР'"
-            class="h-10 w-10 rounded-lg object-contain"
+            class="h-9 w-9 rounded-md object-contain"
             @error="isLogoImageHidden = true"
           >
-          <span v-else class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-sm font-bold text-white">
+          <span v-else class="flex h-9 w-9 items-center justify-center rounded-md bg-neutral-950 text-xs font-semibold text-white">
             {{ settings?.logoInitial ?? 'A' }}
           </span>
-          <span class="text-base font-bold tracking-tight text-slate-950">{{ settings?.logoText ?? 'AutoHub KG' }}</span>
+          <span class="truncate text-base font-semibold uppercase tracking-[0.42em] text-neutral-950">{{ settings?.logoText ?? 'AutoHub KG' }}</span>
         </NuxtLink>
 
-        <nav class="hidden items-center gap-1 md:flex">
+        <nav class="hidden items-center gap-8 md:flex">
+          <NuxtLink
+            to="/"
+            class="focus-ring rounded-sm text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-700 transition hover:text-neutral-950"
+          >
+            Главная
+          </NuxtLink>
+          <NuxtLink
+            to="/catalog"
+            class="focus-ring rounded-sm text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-700 transition hover:text-neutral-950"
+          >
+            Каталог
+          </NuxtLink>
           <NuxtLink
             v-for="link in links"
             :key="link.label"
             :to="link.to"
-            class="focus-ring rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950"
+            class="focus-ring rounded-sm text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-700 transition hover:text-neutral-950"
           >
             {{ link.label }}
-            <span v-if="link.label === 'Избранное' && favoriteIds.length" class="ml-1 text-emerald-700">
+            <span v-if="link.label === 'Избранное' && favoriteIds.length" class="ml-1 text-neutral-950">
               {{ favoriteIds.length }}
             </span>
           </NuxtLink>
         </nav>
 
         <div class="hidden items-center gap-2 md:flex">
-          <button class="focus-ring rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50">
-            Войти
+          <span class="h-6 w-px bg-neutral-950/15" />
+
+          <button
+            class="focus-ring flex h-6 w-6 shrink-0 items-center justify-center rounded-[3px] border-[2.5px] border-neutral-950 bg-white p-0 transition hover:opacity-80"
+            type="button"
+            title="RU"
+          >
+            <div class="flex h-full w-full flex-col">
+              <div class="h-1/3 w-full bg-white" />
+              <div class="h-1/3 w-full bg-blue-600" />
+              <div class="h-1/3 w-full bg-red-600" />
+            </div>
           </button>
         </div>
 
         <button
-          class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-900 md:hidden"
+          class="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-950/10 bg-white/35 text-neutral-950 backdrop-blur md:hidden"
           type="button"
           :aria-expanded="isMenuOpen"
           aria-label="Открыть меню"
@@ -90,22 +112,34 @@ onMounted(loadFavorites)
         </button>
       </div>
 
-      <div v-if="isMenuOpen" class="border-t border-slate-100 pb-4 pt-3 md:hidden">
+      <div v-if="isMenuOpen" class="border-t border-neutral-950/10 pb-4 pt-3 md:hidden">
         <nav class="grid gap-2">
+          <NuxtLink
+            to="/"
+            class="focus-ring flex min-h-10 items-center rounded-md px-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-800 hover:bg-white/35"
+          >
+            Главная
+          </NuxtLink>
+          <NuxtLink
+            to="/catalog"
+            class="focus-ring flex min-h-10 items-center rounded-md px-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-800 hover:bg-white/35"
+          >
+            Каталог
+          </NuxtLink>
           <NuxtLink
             v-for="link in links"
             :key="link.label"
             :to="link.to"
-            class="focus-ring flex min-h-10 items-center justify-between rounded-lg px-4 text-sm font-bold text-slate-800 hover:bg-slate-100"
+            class="focus-ring flex min-h-10 items-center justify-between rounded-md px-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-800 hover:bg-white/35"
           >
             <span>{{ link.label }}</span>
-            <span v-if="link.label === 'Избранное' && favoriteIds.length" class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs text-emerald-800">
+            <span v-if="link.label === 'Избранное' && favoriteIds.length" class="rounded-full bg-neutral-950 px-2.5 py-1 text-xs text-white">
               {{ favoriteIds.length }}
             </span>
           </NuxtLink>
-          <button class="focus-ring mt-2 min-h-10 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white">
-            Войти
-          </button>
+          <BlackButton class="mt-2">
+            Связаться
+          </BlackButton>
         </nav>
       </div>
     </div>

@@ -47,7 +47,9 @@ const payloadToCar = (payload: AdminCarPayload, id: string, priceBadge = 'Fair p
       responseTime: ''
     },
     isFeatured: payload.isFeatured,
-    isUrgent: Boolean(payload.isUrgent)
+    isUrgent: Boolean(payload.isUrgent),
+    categoryId: payload.categoryId,
+    vehicleTypeId: payload.vehicleTypeId
   }
 }
 
@@ -65,6 +67,7 @@ export const listCars = (filters?: MemoryCarFilters) => {
 
     return (
       (!search || searchValues.includes(search)) &&
+      (!filters?.categoryId || car.categoryId === filters.categoryId) &&
       (!filters?.brand || car.brand === filters.brand) &&
       (!filters?.model || car.model.toLowerCase().includes(filters.model.toLowerCase())) &&
       (!filters?.description || car.description.toLowerCase().includes(filters.description.toLowerCase())) &&

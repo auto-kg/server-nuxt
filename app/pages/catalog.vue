@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import type { Car, CarSearchFilters } from '~/types/car'
+import type { Car, CarSearchFilters, VehicleType } from '~/types/car'
 import { filterCarsLocally } from '~/utils/carFilters'
 
 const route = useRoute()
 const router = useRouter()
 const { data: carsResponse } = await useFetch<{ data: Car[] }>('/api/cars')
+const { data: vehicleTypesResponse } = await useFetch<{ data: VehicleType[] }>('/api/vehicle-types')
 
 const allCars = computed(() => carsResponse.value?.data ?? [])
+const vehicleTypes = computed(() => vehicleTypesResponse.value?.data ?? [])
 const filters = ref<CarSearchFilters>(carSearchFiltersFromQuery(route.query))
 const currentPage = ref(1)
 const viewMode = ref<'grid' | 'list'>('grid')
 const perPage = 9
+const filterKeys = Object.keys(createDefaultCarSearchFilters()) as Array<keyof CarSearchFilters>
+const areFiltersEqual = (first: CarSearchFilters, second: CarSearchFilters) =>
+  filterKeys.every((key) => first[key] === second[key])
 
 const filteredCars = computed(() => filterCarsLocally(allCars.value, filters.value))
 const totalPages = computed(() => Math.max(Math.ceil(filteredCars.value.length / perPage), 1))
@@ -33,6 +38,10 @@ watch(
 )
 
 const updateFilters = (nextFilters: CarSearchFilters) => {
+  if (areFiltersEqual(filters.value, nextFilters)) {
+    return
+  }
+
   filters.value = { ...nextFilters }
 }
 
@@ -65,13 +74,10 @@ useHead({
 </script>
 
 <template>
-  <div>
-    <AppHeader />
-
-    <main class="bg-slate-50 py-5 sm:py-7">
-      <div class="px-4 sm:px-6 md:mx-auto md:w-[80%] md:px-0 lg:w-[70%]">
+  <main class="lux-page min-h-screen py-24 sm:py-28">
+      <div class="content-page">
         <div class="mb-4">
-          <NuxtLink to="/" class="focus-ring inline-flex min-h-9 items-center rounded-lg px-1 text-sm font-bold text-slate-600 hover:text-slate-950">
+          <NuxtLink to="/" class="focus-ring inline-flex min-h-9 items-center rounded-md px-1 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-600 hover:text-neutral-950">
             На главную
           </NuxtLink>
         </div>
@@ -80,90 +86,24 @@ useHead({
           :cars="allCars"
           :initial-filters="filters"
           :result-count="filteredCars.length"
+          :vehicle-types="vehicleTypes"
           submit-label="Обновить каталог"
           @change="updateFilters"
           @reset="reset"
           @search="search"
         />
 
-        <section id="catalog-results" class="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <SectionHeader
-            title="Каталог автомобилей"
-            :subtitle="filteredCars.length ? `${filteredCars.length} предложений, показаны ${pageStart + 1}-${pageEnd}` : 'Нет предложений по выбранным условиям'"
-            compact
-          >
-            <div class="inline-grid grid-cols-2 rounded-lg border border-slate-200 bg-slate-50 p-1">
-              <button
-                class="focus-ring min-h-9 rounded-md px-3 text-sm font-bold transition"
-                :class="viewMode === 'grid' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-950'"
-                type="button"
-                @click="viewMode = 'grid'"
-              >
-                Блоки
-              </button>
-
-              <button
-                class="focus-ring min-h-9 rounded-md px-3 text-sm font-bold transition"
-                :class="viewMode === 'list' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-950'"
-                type="button"
-                @click="viewMode = 'list'"
-              >
-                Строки
-              </button>
-            </div>
-          </SectionHeader>
-
-          <div v-if="paginatedCars.length && viewMode === 'grid'" class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            <CarCard v-for="car in paginatedCars" :key="car.id" :car="car" />
-          </div>
-
-          <div v-else-if="paginatedCars.length" class="mt-4 grid gap-3">
-            <CarListItem v-for="car in paginatedCars" :key="car.id" :car="car" />
-          </div>
-
-          <div v-else class="mt-5 rounded-lg border border-slate-200 bg-white p-6 text-center">
-            <h3 class="text-xl font-bold text-slate-950">Ничего не найдено</h3>
-            <p class="mt-2 text-sm text-slate-600">Попробуйте изменить марку, цену, город или тип транспорта.</p>
-          </div>
-
-          <nav
-            v-if="totalPages > 1"
-            class="mt-6 grid gap-3 border-t border-slate-100 pt-4 sm:flex sm:items-center sm:justify-between"
-            aria-label="Пагинация каталога"
-          >
-            <button
-              class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
-              :disabled="currentPage === 1"
-              type="button"
-              @click="setPage(currentPage - 1)"
-            >
-              Назад
-            </button>
-
-            <div class="flex justify-center gap-2 overflow-x-auto">
-              <button
-                v-for="page in visiblePages"
-                :key="page"
-                class="focus-ring h-10 w-10 shrink-0 rounded-lg text-sm font-bold"
-                :class="page === currentPage ? 'bg-slate-950 text-white' : 'border border-slate-200 bg-white text-slate-950'"
-                type="button"
-                @click="setPage(page)"
-              >
-                {{ page }}
-              </button>
-            </div>
-
-            <button
-              class="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
-              :disabled="currentPage === totalPages"
-              type="button"
-              @click="setPage(currentPage + 1)"
-            >
-              Далее
-            </button>
-          </nav>
-        </section>
+        <CatalogResults
+          v-model:view-mode="viewMode"
+          :cars="paginatedCars"
+          :current-page="currentPage"
+          :filtered-count="filteredCars.length"
+          :page-end="pageEnd"
+          :page-start="pageStart"
+          :total-pages="totalPages"
+          :visible-pages="visiblePages"
+          @set-page="setPage"
+        />
       </div>
-    </main>
-  </div>
+  </main>
 </template>

@@ -3,7 +3,9 @@ import type { AdminCarPayload, Car, CarSearchFilters } from '../../app/types/car
 import { createCar as createMemoryCar, findCar as findMemoryCar, getCarDictionaries as getMemoryDictionaries, listCars as listMemoryCars, updateCar as updateMemoryCar } from '../utils/carStore'
 import { normalizeBrandName, normalizeDictionaryValue } from '../utils/normalize'
 import { getDb, hasDatabase } from '../db/client'
-import { brandAliases, brands, carImages, cars, cities, models, sellers } from '../db/schema'
+import { brandAliases, brands, carImages, cars, cities, homeCategories, models, sellers, vehicleTypes } from '../db/schema'
+import { listHomeCategories } from './categories'
+import { listVehicleTypes } from './vehicleTypes'
 
 const defaultImage = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=82'
 
@@ -24,6 +26,8 @@ type CarRow = {
   city: typeof cities.$inferSelect
   seller: typeof sellers.$inferSelect
   image: typeof carImages.$inferSelect | null
+  category: typeof homeCategories.$inferSelect | null
+  vehicleType: typeof vehicleTypes.$inferSelect | null
 }
 
 type CarRepositoryFilters = Partial<CarSearchFilters> & {
@@ -69,7 +73,21 @@ const rowsToCars = (rows: CarRow[]) => {
         responseTime: ''
       },
       isFeatured: row.car.isFeatured,
-      isUrgent: row.car.isUrgent
+      isUrgent: row.car.isUrgent,
+      categoryId: row.category?.id ?? '',
+      categoryTitle: row.category?.title ?? '',
+      vehicleTypeId: row.vehicleType?.id ?? '',
+      vehicleType: row.vehicleType
+        ? {
+            id: row.vehicleType.id,
+            value: row.vehicleType.value,
+            title: row.vehicleType.title,
+            description: row.vehicleType.description,
+            image: row.vehicleType.image,
+            sortOrder: row.vehicleType.sortOrder,
+            isActive: row.vehicleType.isActive
+          }
+        : null
     })
   }
 
@@ -178,6 +196,14 @@ export const listCarsRepository = async (filters?: CarRepositoryFilters) => {
     conditions.push(eq(brands.name, filters.brand))
   }
 
+  if (filters?.categoryId) {
+    conditions.push(eq(cars.categoryId, filters.categoryId))
+  }
+
+  if (filters?.vehicleType) {
+    conditions.push(eq(vehicleTypes.value, filters.vehicleType))
+  }
+
   if (filters?.model) {
     conditions.push(ilike(models.name, `%${filters.model}%`))
   }
@@ -207,12 +233,14 @@ export const listCarsRepository = async (filters?: CarRepositoryFilters) => {
   }
 
   const rows = await db
-    .select({ car: cars, brand: brands, model: models, city: cities, seller: sellers, image: carImages })
+    .select({ car: cars, brand: brands, model: models, city: cities, seller: sellers, image: carImages, category: homeCategories, vehicleType: vehicleTypes })
     .from(cars)
     .innerJoin(brands, eq(cars.brandId, brands.id))
     .innerJoin(models, eq(cars.modelId, models.id))
     .innerJoin(cities, eq(cars.cityId, cities.id))
     .innerJoin(sellers, eq(cars.sellerId, sellers.id))
+    .leftJoin(homeCategories, eq(cars.categoryId, homeCategories.id))
+    .leftJoin(vehicleTypes, eq(cars.vehicleTypeId, vehicleTypes.id))
     .leftJoin(carImages, eq(cars.id, carImages.carId))
     .where(and(...conditions))
     .orderBy(desc(cars.createdAt), asc(carImages.sortOrder))
@@ -228,12 +256,14 @@ export const findCarRepository = async (id: string) => {
 
   const db = getDb()
   const rows = await db
-    .select({ car: cars, brand: brands, model: models, city: cities, seller: sellers, image: carImages })
+    .select({ car: cars, brand: brands, model: models, city: cities, seller: sellers, image: carImages, category: homeCategories, vehicleType: vehicleTypes })
     .from(cars)
     .innerJoin(brands, eq(cars.brandId, brands.id))
     .innerJoin(models, eq(cars.modelId, models.id))
     .innerJoin(cities, eq(cars.cityId, cities.id))
     .innerJoin(sellers, eq(cars.sellerId, sellers.id))
+    .leftJoin(homeCategories, eq(cars.categoryId, homeCategories.id))
+    .leftJoin(vehicleTypes, eq(cars.vehicleTypeId, vehicleTypes.id))
     .leftJoin(carImages, eq(cars.id, carImages.carId))
     .where(and(eq(cars.id, id), eq(cars.status, 'published')))
     .orderBy(asc(carImages.sortOrder))
@@ -261,6 +291,8 @@ export const createCarRepository = async (payload: AdminCarPayload) => {
       modelId: model.id,
       cityId: city.id,
       sellerId: seller.id,
+      categoryId: payload.categoryId || null,
+      vehicleTypeId: payload.vehicleTypeId || null,
       title: payload.title.trim() || `${brand.name} ${model.name}`.trim(),
       price: payload.price,
       year: payload.year,
@@ -323,6 +355,8 @@ export const updateCarRepository = async (id: string, payload: AdminCarPayload) 
       brandId: brand.id,
       modelId: model.id,
       cityId: city.id,
+      categoryId: payload.categoryId || null,
+      vehicleTypeId: payload.vehicleTypeId || null,
       title: payload.title.trim() || `${brand.name} ${model.name}`.trim(),
       price: payload.price,
       year: payload.year,
@@ -354,11 +388,15 @@ export const updateCarRepository = async (id: string, payload: AdminCarPayload) 
 
 export const getCarDictionariesRepository = async () => {
   if (!hasDatabase()) {
-    return getMemoryDictionaries()
+    return {
+      ...getMemoryDictionaries(),
+      categories: await listHomeCategories({ includeInactive: true }),
+      vehicleTypes: await listVehicleTypes({ includeInactive: true })
+    }
   }
 
   const db = getDb()
-  const [brandRows, modelRows, cityRows, carRows] = await Promise.all([
+  const [brandRows, modelRows, cityRows, carRows, categoryRows, vehicleTypeRows] = await Promise.all([
     db.select({ name: brands.name }).from(brands).orderBy(asc(brands.name)),
     db.select({ name: models.name }).from(models).orderBy(asc(models.name)),
     db.select({ name: cities.name }).from(cities).orderBy(asc(cities.name)),
@@ -367,7 +405,9 @@ export const getCarDictionariesRepository = async () => {
       transmission: cars.transmission,
       drivetrain: cars.drivetrain,
       color: cars.color
-    }).from(cars)
+    }).from(cars),
+    listHomeCategories({ includeInactive: true }),
+    listVehicleTypes({ includeInactive: true })
   ])
 
   return {
@@ -377,6 +417,8 @@ export const getCarDictionariesRepository = async () => {
     fuels: unique(carRows.map((row) => row.fuel)),
     transmissions: unique(carRows.map((row) => row.transmission)),
     drivetrains: unique(carRows.map((row) => row.drivetrain)),
-    colors: unique(carRows.map((row) => row.color))
+    colors: unique(carRows.map((row) => row.color)),
+    categories: categoryRows,
+    vehicleTypes: vehicleTypeRows
   }
 }

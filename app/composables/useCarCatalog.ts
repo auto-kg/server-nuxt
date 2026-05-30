@@ -3,6 +3,7 @@ import { carMatchesVehicleType } from '~/utils/vehicleType'
 
 export const createDefaultCarSearchFilters = (): CarSearchFilters => ({
   query: '',
+  categoryId: '',
   vehicleType: '',
   brand: '',
   model: '',
