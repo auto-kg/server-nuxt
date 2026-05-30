@@ -22,12 +22,12 @@ const emit = defineEmits<{
           class="group w-36 shrink-0 snap-start overflow-hidden rounded-xl border border-white/35 bg-white/30 backdrop-blur sm:w-40"
         >
           <button class="block h-full w-full text-left" type="button" @click="emit('open', category)">
-            <div class="aspect-square overflow-hidden bg-neutral-200">
+            <span class="aspect-square block overflow-hidden bg-neutral-200">
               <img :src="category.image" :alt="category.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
-            </div>
-            <div class="px-3 py-2">
-              <h3 class="text-sm font-semibold leading-tight text-neutral-950">{{ category.title }}</h3>
-            </div>
+            </span>
+            <span class="block px-3 py-2">
+              <span class="block text-sm font-semibold leading-tight text-neutral-950">{{ category.title }}</span>
+            </span>
           </button>
         </article>
       </HorizontalScroller>
