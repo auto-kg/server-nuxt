@@ -19,7 +19,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section id="catalog-results" class="lux-glass mt-5 rounded-lg p-4 sm:p-5">
+  <UiPanel id="catalog-results" class="mt-5">
     <SectionHeader
       title="Каталог автомобилей"
       :subtitle="props.filteredCount ? `${props.filteredCount} предложений, показаны ${props.pageStart + 1}-${props.pageEnd}` : 'Нет предложений по выбранным условиям'"
@@ -95,5 +95,5 @@ const emit = defineEmits<{
         Далее
       </button>
     </nav>
-  </section>
+  </UiPanel>
 </template>

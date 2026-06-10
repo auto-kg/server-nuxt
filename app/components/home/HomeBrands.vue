@@ -13,7 +13,7 @@ const emit = defineEmits<{
 
 <template>
   <section class="content-page py-3 sm:py-4">
-    <div class="lux-glass rounded-lg p-4 sm:p-5">
+    <UiPanel>
       <SectionHeader title="Популярные марки" subtitle="Быстрый вход в самые востребованные объявления каталога." compact />
 
       <div v-if="props.brands.length" class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
@@ -32,6 +32,6 @@ const emit = defineEmits<{
       <div v-else class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
         Марки появятся после добавления авто
       </div>
-    </div>
+    </UiPanel>
   </section>
 </template>

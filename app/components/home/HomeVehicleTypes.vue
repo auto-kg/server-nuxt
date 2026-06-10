@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 <template>
   <section class="content-page py-3 sm:py-4">
-    <div class="lux-glass rounded-lg p-4 sm:p-5">
+    <UiPanel>
       <SectionHeader
         title="Тип транспортных средств"
         subtitle="Быстрый старт по кузову и назначению автомобиля."
@@ -44,6 +44,6 @@ const emit = defineEmits<{
            class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
         Типы появятся после добавления объявлений.
       </div>
-    </div>
+    </UiPanel>
   </section>
 </template>

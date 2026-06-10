@@ -122,120 +122,106 @@ const reset = () => {
     </div>
 
     <div v-show="isOpen" class="grid gap-3 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-4">
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700 sm:col-span-2 lg:col-span-2">
-        Поиск авто
-        <input
+      <UiField class="sm:col-span-2 lg:col-span-2" label="Поиск авто">
+        <UiInput
           v-model.trim="filters.query"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Camry, Бишкек, дилер, кожа"
           type="search"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Тип транспорта
-        <select v-model="filters.vehicleType" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+      <UiField label="Тип транспорта">
+        <UiSelect v-model="filters.vehicleType">
           <option value="">Любой</option>
           <option v-for="type in availableVehicleTypes" :key="type.value" :value="type.value">{{ type.title }}</option>
-        </select>
-      </label>
+        </UiSelect>
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Марка
-        <select v-model="filters.brand" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+      <UiField label="Марка">
+        <UiSelect v-model="filters.brand">
           <option value="">Любая</option>
           <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
-        </select>
-      </label>
+        </UiSelect>
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Модель
-        <input
+      <UiField label="Модель">
+        <UiInput
           v-model.trim="filters.model"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Например, Golf"
           type="text"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        По описанию
-        <input
+      <UiField label="По описанию">
+        <UiInput
           v-model.trim="filters.description"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           placeholder="Без ДТП, кожа, 4WD"
           type="text"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Цена до
-        <input
+      <UiField label="Цена до">
+        <UiInput
           v-model="filters.maxPrice"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="0"
           placeholder="30000"
           type="number"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Год от
-        <input
+      <UiField label="Год от">
+        <UiInput
           v-model="filters.yearFrom"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="1990"
           placeholder="2020"
           type="number"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Пробег до
-        <input
+      <UiField label="Пробег до">
+        <UiInput
           v-model="filters.maxMileage"
-          class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 placeholder:text-neutral-400 backdrop-blur"
           inputmode="numeric"
           min="0"
           placeholder="80000"
           type="number"
-        >
-      </label>
+        />
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Тип топлива
-        <select v-model="filters.fuel" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+      <UiField label="Тип топлива">
+        <UiSelect v-model="filters.fuel">
           <option value="">Любой</option>
           <option v-for="fuel in fuels" :key="fuel" :value="fuel">{{ fuel }}</option>
-        </select>
-      </label>
+        </UiSelect>
+      </UiField>
 
-      <label class="grid gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-700">
-        Город
-        <select v-model="filters.city" class="w-full focus-ring min-h-11 rounded-md border border-neutral-950/10 bg-white/45 px-3 text-sm font-medium normal-case tracking-normal text-neutral-950 backdrop-blur">
+      <UiField label="Город">
+        <UiSelect v-model="filters.city">
           <option value="">Любой</option>
           <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-        </select>
-      </label>
+        </UiSelect>
+      </UiField>
 
-      <BlackButton
+      <UiButton
         class="w-full mt-auto lg:col-span-1"
         :disabled="props.isLoading"
         type="submit"
+        variant="primary"
       >
         {{ props.isLoading ? 'Ищем...' : (props.submitLabel ?? 'Найти авто') }}
-      </BlackButton>
+      </UiButton>
 
-      <button
-        class="w-full focus-ring mt-auto min-h-11 rounded-none border border-neutral-950/15 bg-white/25 px-4 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-950 backdrop-blur transition hover:bg-white/45 disabled:cursor-not-allowed disabled:opacity-50"
+      <UiButton
+        class="mt-auto w-full"
         :disabled="props.isLoading || !hasActiveFilters"
         type="button"
+        variant="outline"
         @click="reset"
       >
         Сбросить
-      </button>
+      </UiButton>
     </div>
   </form>
 </template>

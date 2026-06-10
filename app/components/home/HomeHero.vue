@@ -55,12 +55,12 @@ const handleHeroImageError = (event: Event) => {
           </p>
 
           <div class="mt-8 flex flex-wrap items-center gap-4">
-            <BlackButton to="/catalog">
+            <UiButton to="/catalog">
               Смотреть каталог
               <svg class="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
               </svg>
-            </BlackButton>
+            </UiButton>
           </div>
         </div>
       </div>

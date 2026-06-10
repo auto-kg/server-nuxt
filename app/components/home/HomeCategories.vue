@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 <template>
   <section class="content-page py-4 sm:py-6">
-    <div class="lux-glass rounded-lg p-4 sm:p-5">
+    <UiPanel>
       <SectionHeader title="Популярные категории" subtitle="Быстрые подборки для разных сценариев покупки." compact />
 
       <HorizontalScroller v-if="props.categories.length" class="mt-4">
@@ -35,6 +35,6 @@ const emit = defineEmits<{
       <div v-else class="mt-4 rounded-lg border border-dashed border-neutral-950/15 bg-white/25 p-5 text-center text-sm font-semibold text-neutral-500">
         Категории пока не добавлены
       </div>
-    </div>
+    </UiPanel>
   </section>
 </template>

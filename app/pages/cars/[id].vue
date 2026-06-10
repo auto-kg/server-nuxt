@@ -131,13 +131,7 @@ useHead({
 <template>
   <main class="lux-page pb-24 pt-24 sm:pt-28 lg:pb-8">
     <div class="content-page">
-
-      <section v-if="showAdminNavigation" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 shadow-sm">
-        <div class="grid grid-cols-2 gap-2">
-          <BlackButton type="button" @click="goBackToAdmin">В админку</BlackButton>
-          <BlackButton :to="`/admin/cars/${car.id}/edit`">Редактировать</BlackButton>
-        </div>
-      </section>
+      <CarAdminActions v-if="showAdminNavigation" :car-id="car.id" @back="goBackToAdmin" />
 
       <NuxtLink to="/" class="focus-ring inline-flex min-h-11 items-center rounded-full px-1 text-sm font-bold text-slate-600 hover:text-slate-950">
         Назад к каталогу
@@ -147,27 +141,10 @@ useHead({
         <div class="space-y-6">
           <CarGallery :images="car.images" :title="car.title" />
 
-          <!-- Заголовочная секция: вертикально на мобиле, горизонтально на sm+ -->
-          <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <div class="flex flex-wrap items-center gap-2 mb-2">
-              <PriceBadge :label="car.priceBadge" />
-              <PriceBadge v-if="car.isUrgent" label="Срочно" />
-              <span class="text-xs text-slate-500">{{ car.city }}</span>
-            </div>
-            <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <h1 class="text-xl font-bold tracking-tight text-slate-950 sm:text-3xl">{{ car.title }}</h1>
-              <p class="text-xl font-bold tracking-tight text-slate-950 sm:text-3xl sm:shrink-0">{{ formatPrice(car.price) }}</p>
-            </div>
-          </section>
-
+          <CarOverviewHeader :car="car" />
           <SpecGrid :specs="specs" />
+          <CarDescriptionSection :description="car.description" />
 
-          <section class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <h2 class="text-xl font-bold tracking-tight text-slate-950">Описание</h2>
-            <p class="mt-3 text-sm leading-8 text-slate-600">{{ car.description }}</p>
-          </section>
-
-          <!-- Контакт после описания на мобиле -->
           <div ref="mobileContactRef" class="lg:hidden">
             <CarContactPanel
               :seller="car.seller"
@@ -188,44 +165,9 @@ useHead({
         </div>
       </div>
 
-      <section class="py-8 sm:py-10">
-        <SectionHeader title="Похожие автомобили" subtitle="Близкие варианты по цене, марке или типу топлива." />
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <CarCard v-for="similarCar in similarCars" :key="similarCar.id" :car="similarCar" />
-        </div>
-      </section>
-
+      <SimilarCarsSection :cars="similarCars" />
     </div>
   </main>
 
-  <!-- Sticky-бар снизу (мобиле) -->
-  <Transition
-    enter-active-class="transition duration-200 ease-out"
-    enter-from-class="translate-y-full opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transition duration-150 ease-in"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-full opacity-0"
-  >
-    <div
-      v-if="showMobileContactBar"
-      class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-4 py-2.5 shadow-[0_-16px_40px_rgba(15,23,42,0.14)] backdrop-blur lg:hidden"
-    >
-      <div class="mx-auto flex max-w-lg items-center gap-2">
-        <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-bold text-slate-950 leading-tight">{{ car.title }}</p>
-          <p class="text-sm text-slate-500 leading-tight">{{ formatPrice(car.price) }}</p>
-        </div>
-        <BlackButton
-          class="shrink-0"
-          compact
-          :href="whatsappUrl"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Связаться
-        </BlackButton>
-      </div>
-    </div>
-  </Transition>
+  <MobileContactBar :car="car" :contact-url="whatsappUrl" :show="showMobileContactBar" />
 </template>
